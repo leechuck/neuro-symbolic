@@ -362,9 +362,76 @@ A De Morgan triplet is a triple \( (T, \perp, n) \) where:
 \end{frame}
 
 \begin{frame}
-  \frametitle{Conjunction}
+  \frametitle{Quantification}
   \includegraphics[width=\textwidth]{ltn3.png}
 \end{frame}
+
+% Slide: Diagonal Quantification in LTN
+\begin{frame}
+\frametitle{Diagonal Quantification in LTN}
+\begin{block}{Diagonal Quantification (Diag)}
+\begin{itemize}
+    \item Diagonal quantification is denoted as \( \text{Diag}(x_1, \ldots, x_h) \).
+    \item It quantifies over specific tuples such that the \( i \)-th tuple contains the \( i \)-th instance of each variable.
+    \item Assumes all variables are grounded onto sequences with the same number of instances.
+    \item Quantifies over the diagonal of \( G(\phi) \) along the axes associated with \( x_1 \ldots x_h \).
+    \item Used for statements that hold true for each pair of sample and label, e.g., \( \forall\text{Diag}(x, y) p(x, y) \) for datasets with samples \( x \) and target labels \( y \).
+    \item Reduces computational complexity by avoiding evaluation for all combinations in \( G(x) \) and \( G(y) \).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Diagonal quantification}
+  \includegraphics[width=\textwidth]{ltn4.png}
+\end{frame}
+
+% Slide: Quantification Over Domain Elements
+\begin{frame}
+\frametitle{Guarded quantification}
+\begin{block}{Quantifying Based on a Condition}
+In many situations, it's desirable to quantify over a set of elements
+in a domain whose grounding satisfies a specific condition. For
+example, one might express a condition using formulas like:
+\begin{itemize}
+    \item \( \forall y (\exists x : \text{age}(x) > \text{age}(y)) (\text{parent}(x, y)) \)
+\end{itemize}
+This formula aggregates values of the \textit{parent} predicate only for instances of \( x \) that satisfy the age condition with respect to \( y \).
+\end{block}
+\end{frame}
+
+% Slide: Grounding Formulas with Conditional Aggregation
+\begin{frame}
+\frametitle{Grounding Formulas with Conditional Aggregation}
+\begin{block}{Aggregating Values Based on Conditions}
+The grounding of a formula like \( \forall y (\exists x: \text{age}(x) > \text{age}(y)) (\text{parent}(x, y)) \) involves:
+\begin{itemize}
+    \item Aggregating values of \( \text{parent}(x, y) \) only for instances of \( x \) that satisfy \( \text{age}(x) > \text{age}(y) \).
+    \item Mathematically represented as:
+\end{itemize}
+\[
+\text{Agg}({\forall})_{j=1}^{|\G(y)|} \text{Agg}({\exists})_{\substack{i=1 \\ \G(\text{age}(x))_i > \G(\text{age}(y))_j}}^{|\G(x)|} \G(\text{parent}(x, y))_{i,j}
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Guarded Quantifiers and Symbolic Evaluation}
+\begin{block}{Symbolic and Non-differentiable Evaluation}
+The evaluation of whether a tuple is safe is symbolic and non-differentiable. Guarded quantifiers only operate over a subset of variables when crisp symbolic knowledge is available.
+\end{block}
+
+\begin{block}{Guarded Quantifiers with Masks}
+Let \( m \) be a mask representing a condition, and \( \G(m) \) associates a Boolean function to \( m \). The grounding of a guarded quantifier is defined as:
+\includegraphics[width=\textwidth]{ltn5.png}
+\end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Guarded quantification}
+  \includegraphics[width=\textwidth]{ltn6.png}
+\end{frame}
+
 
 
 
