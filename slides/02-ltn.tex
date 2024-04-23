@@ -371,13 +371,14 @@ A De Morgan triplet is a triple \( (T, \perp, n) \) where:
 \begin{frame}
   \frametitle{Operators and Satisfaction Interpretation}
   \begin{block}{Approximating Universal Quantification}
-    The operator \( A_{pME} (a_1, \ldots, a_n) \) approximates
+    The operator \( A_{pME} (a_1, \ldots, a_n) \) $=\(
+    \frac{1}{n}\sum_{i=1}^n a_i^p \)^\frac{1}{p} $ approximates
     universal quantification as a smooth minimum, influenced by a
     hyper-parameter \( p \) (the exponent in the generalized mean):
     \begin{itemize}
-    \item If \( p = 1 \), \( \text{ApM}_E \) corresponds to the
+    \item If \( p = 1 \), \( A_{pME} \) corresponds to the
       arithmetic mean.
-    \item As \( p \) increases, \( \text{ApM}_E \) converges to the
+    \item As \( p \) increases, \( A_{pME} \) converges to the
       min operator, making the quantified formula stricter.
     \end{itemize}
   \end{block}
@@ -836,8 +837,11 @@ Reasoning by refutation searches for a counter-example to disprove a logical con
 
 \begin{block}{Determining Logical Consequence}
 \begin{itemize}
-    \item If \( G^*(K) < q \): Then for all \( G_\theta \), \( G_\theta(K) < q \) implies \( (K, G(\cdot | \theta), \Theta) \models_q \phi \).
-    \item If \( G^*(K) \geq q \) and \( G^*(\phi) \geq q \): Logical consequence holds.
+    \item If \( G^*(K) < q \): Then for all \( G_\theta \), \( G_\theta(K) < q \) and \( (K, G(\cdot | \theta), \Theta) \models_q \phi \).
+    \item If \( G^*(K) \geq q \) and \( G^*(\phi) \geq q \): for all
+      $G_\theta$ with $G_\theta(K) \geq q$: $G_\theta(\phi) \geq
+      G^*(\phi) \geq q$, therefore $(K, G(\cdot | \theta), \Theta)
+      \models_q \phi$.
     \item If \( G^*(K) \geq q \) and \( G^*(\phi) < q \): Logical consequence does not hold.
 \end{itemize}
 \end{block}
@@ -925,6 +929,12 @@ and negative examples.
     \end{itemize}
   \end{block}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Binary Classification}
+  \includegraphics[width=\textwidth]{ex1.png}
+\end{frame}
+
 
 % Slide 2: Learning Process in LTN
 \begin{frame}

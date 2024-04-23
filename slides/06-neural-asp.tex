@@ -1,0 +1,1578 @@
+\documentclass{beamer}
+\usepackage{chessboard}
+\usepackage{centernot}
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary {arrows.meta,bending,positioning}
+
+% \usepackage{pstricks}
+\setbeamertemplate{navigation symbols}{}
+\usepackage{pifont}
+\newcommand{\itarrow}{{\Pisymbol{pzd}{229}}}
+\newcommand{\OK}{\mbox{\textcolor{green}{\Pisymbol{pzd}{52}}}}
+\newcommand{\KO}{\mbox{\textcolor{red}{\Pisymbol{pzd}{56}}}}
+
+%\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,escapechar=?]
+
+% - syntax ---------------------------------------------------------------------
+\newcommand{\naf}[1]{\ensuremath{{\sim\!\!{#1}}}}
+
+\newcommand{\head}[1]{\ensuremath{\mathit{head}(#1)}}
+\newcommand{\body}[1]{\ensuremath{\mathit{body}(#1)}}
+
+\newcommand{\atom}[1]{\ensuremath{\mathit{atom}(#1)}}
+
+\newcommand{\poslits}[1]{\ensuremath{{#1}^+}}
+\newcommand{\neglits}[1]{\ensuremath{{#1}^-}}
+
+\newcommand{\pbody}[1]{\poslits{\body{#1}}}
+\newcommand{\nbody}[1]{\neglits{\body{#1}}}
+
+\newcommand{\PRG}{\ensuremath{P}}
+
+\newcommand{\atbody}[2]{\ensuremath{\mathit{body}_{#1}(#2)}}
+
+\newcommand{\ground}[1]{\ensuremath{\mathit{ground}(#1)}}
+\newcommand{\cground}[2]{\ensuremath{\mathit{ground}_{#2}(#1)}}
+
+% - semantics ------------------------------------------------------------------
+\newcommand{\SM}[1]{\ensuremath{\mathit{SM}(#1)}}
+
+% - operators ------------------------------------------------------------------
+\newcommand{\Cn}[1]{\ensuremath{\mathit{Cn}(#1)}}
+\newcommand{\reduct}[2]{\ensuremath{#1^{#2}}}
+
+\newcommand{\To}[1]{\ensuremath{T_{#1}}}
+\newcommand{\T}[2]{\To{#1}#2}
+\newcommand{\TiO}[2]{\To{#2}^{#1}}
+\newcommand{\Ti}[3]{\TiO{#1}{#2}#3}
+
+\newcommand{\BF}[1]{\ensuremath{\mathit{BF}(#1)}}
+\newcommand{\CF}[1]{\ensuremath{\mathit{CF}(#1)}}
+\newcommand{\CFIF}[1]{\ensuremath{\overleftarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFFI}[1]{\ensuremath{\overrightarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFX}[1]{\ensuremath{\mathit{CF}^x(#1)}}
+
+\newcommand{\loops}[1]{\ensuremath{\mathit{loop}(#1)}}
+\newcommand{\ES}[2]{\ensuremath{\mathit{ES}_{\!#2}(#1)}}
+\newcommand{\EB}[2]{\ensuremath{\mathit{EB}_{\!#2}(#1)}}
+\newcommand{\LFM}[2]{\ensuremath{\mathit{LF}_{\!#2}(#1)}}
+\newcommand{\LF}[1]{\ensuremath{\mathit{LF}(#1)}}
+
+% - tableaux -------------------------------------------------------------------
+\newcommand{\true}{\ensuremath{\mathbf{T}}}
+\newcommand{\false}{\ensuremath{\mathbf{F}}}
+
+\newcommand{\Tsigned}[1]{\ensuremath{\true{#1}}}
+\newcommand{\Fsigned}[1]{\ensuremath{\false{#1}}}
+
+\newcommand{\TOP}[1]{\ensuremath{D_{#1}}}
+\newcommand{\COP}[1]{\ensuremath{D^*_{#1}}}
+
+\newcommand{\Proviso}[1]{\raisebox{-7pt}[0pt][0pt]{\ensuremath{(#1)}}}
+
+\newcommand{\plit}[1]{\ensuremath{\mathbf{t}{#1}}}
+\newcommand{\nlit}[1]{\ensuremath{\mathbf{f}{#1}}}
+
+% - nogoods, assigmemts, etc. --------------------------------------------------
+\newcommand{\domain}[1]{\ensuremath{\mathit{dom}(#1)}}
+
+\newcommand{\ass}{\ensuremath{A}}
+
+\newcommand{\tlits}[1]{\ensuremath{{#1}^{\true}}}
+\newcommand{\flits}[1]{\ensuremath{{#1}^{\false}}}
+\newcommand{\prefix}[2]{\ensuremath{#1[#2]}}
+
+% ADDED to solving (for time being; not used in BOOK!)
+% \newcommand{\clno}[1]{\ensuremath{\delta(#1)}}
+% \newcommand{\ClNo}[1]{\ensuremath{\Delta(#1)}}
+% \newcommand{\nocl}[1]{\ensuremath{\gamma(#1)}}
+% \newcommand{\NoCl}[1]{\ensuremath{\Gamma(#1)}}
+
+\newcommand{\CN}[1]{\ensuremath{\Delta_{#1}}}
+\newcommand{\LN}[1]{\ensuremath{\Lambda_{#1}}}
+
+\newcommand{\dl}[0]{\ensuremath{\mathit{dl}}}
+\newcommand{\dlevel}[1]{\ensuremath{\mathit{dlevel}(#1)}}
+\newcommand{\opp}[1]{\ensuremath{\overline{#1}}}
+
+%\newcommand{\undef}[0]{\ensuremath{\circ}}
+\newcommand{\trdef}[0]{\ensuremath{\times}}
+\newcommand{\scc}[1]{\ensuremath{\mathit{scc}(#1)}}
+\newcommand{\source}[1]{\ensuremath{\mathit{source}(#1)}}
+
+% - modules ----------------------------------------
+\newcommand{\module}[1]{\ensuremath{\mathbb{#1}}}
+\newcommand{\prog}[1]{\ensuremath{P(#1)}}
+\newcommand{\inp}[1]{\ensuremath{I(#1)}}
+\newcommand{\out}[1]{\ensuremath{O(#1)}}
+\newcommand{\inst}[2]{\ensuremath{#1(#2)}}
+\newcommand{\exts}{\epsilon}
+
+% % - incremental solving ----------------------------------------
+% \newcommand{\grounder}{\textsc{Ground}}
+% \newcommand{\addProgram}{\textsc{Add}}
+% \newcommand{\solver}{\textsc{Solve}}
+% \newcommand{\isolve}{\textsc{iSolve}}
+
+% - algorithm2e ----------------------------------------------------------------
+%\DontPrintSemicolon
+
+% \SetKw{ForSome}{for some}
+% \SetKw{SuchThat}{such that}
+
+% \SetKwInOut{Input}{Input}
+% \SetKwInOut{Output}{Output}
+% \SetKwInOut{Global}{Global}
+% \SetKwInOut{Internal}{Internal}
+
+% \SetKwFor{Let}{let}{in}{tel}
+% \SetKwFor{Loop}{loop}{}{}
+
+% \SetFuncSty{sc}
+% \SetKwFunction{Select}{Select}
+% \SetKwFunction{UnFoundedSet}{Unfounded\-Set}
+% \SetKwFunction{Propagation}{Nogood\-Propagation}
+% \SetKwFunction{ConflictAnalysis}{Conflict\-Analysis}
+
+% \SetKwData{Grounder}{Grounder}
+% \SetKwData{Solver}{Solver}
+
+% \SetCommentSty{it}
+% \SetKwComment{AlgoComm}{// }{}
+
+% - systems ----------------------------------------------------------------------
+% >>> NOT USED in BOOK <<<
+\newcommand{\sysfont}{\textit}
+\newcommand{\acthex}{\sysfont{acthex}}
+\newcommand{\adsolver}{\sysfont{adsolver}}
+\newcommand{\asparagus}{\sysfont{asparagus}}
+\newcommand{\aspartame}{\sysfont{aspartame}}
+\newcommand{\aspic}{\sysfont{aspic}}
+\newcommand{\aspmt}{\sysfont{aspmt}}
+\newcommand{\asprin}{\sysfont{asprin}}
+\newcommand{\assat}{\sysfont{assat}}
+\newcommand{\berkmin}{\sysfont{berkmin}}
+\newcommand{\claspD}{\sysfont{claspD}}
+\newcommand{\claspar}{\sysfont{claspar}}
+\newcommand{\claspfolio}{\sysfont{claspfolio}}
+\newcommand{\clasp}{\sysfont{clasp}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\cmodels}{\sysfont{cmodels}}
+\newcommand{\coala}{\sysfont{coala}}
+\newcommand{\dingo}{\sysfont{dingo}}
+\newcommand{\dlvhex}{\sysfont{dlvhex}}
+\newcommand{\dlv}{\sysfont{dlv}}
+\newcommand{\ezcsp}{\sysfont{ezcsp}}
+\newcommand{\ftolp}{\sysfont{f2lp}}
+\newcommand{\gasp}{\sysfont{gasp}}
+\newcommand{\gecode}{\sysfont{gecode}}
+\newcommand{\gidl}{\sysfont{gidl}}
+\newcommand{\gnt}{\sysfont{gnt}}
+\newcommand{\gringo}{\sysfont{gringo}}
+\newcommand{\iclingo}{\sysfont{iclingo}}
+\newcommand{\idp}{\sysfont{idp}}
+\newcommand{\inca}{\sysfont{inca}}
+\newcommand{\jdlv}{\sysfont{jdlv}}
+\newcommand{\lctocasp}{\sysfont{lc2casp}}
+\newcommand{\lparse}{\sysfont{lparse}}
+\newcommand{\lptodiff}{\sysfont{lp2diff}}
+\newcommand{\lptosat}{\sysfont{lp2sat}}
+\newcommand{\mchaff}{\sysfont{mchaff}}
+\newcommand{\metasp}{\sysfont{metasp}}
+\newcommand{\mingo}{\sysfont{mingo}}
+\newcommand{\minisat}{\sysfont{minisat}}
+\newcommand{\nomorepp}{\sysfont{nomore++}}
+\newcommand{\oclingo}{\sysfont{oclingo}}
+\newcommand{\omiga}{\sysfont{omiga}}
+\newcommand{\piclasp}{\sysfont{piclasp}}
+\newcommand{\picosat}{\sysfont{picosat}}
+\newcommand{\plasp}{\sysfont{plasp}}
+\newcommand{\quontroller}{\sysfont{quontroller}}
+\newcommand{\rosoclingo}{\sysfont{rosoclingo}}
+\newcommand{\sag}{\sysfont{sag}}
+\newcommand{\satz}{\sysfont{satz}}
+\newcommand{\siege}{\sysfont{siege}}
+\newcommand{\smodelscc}{\sysfont{smodels$_{\!cc}$}}
+\newcommand{\smodelsr}{\sysfont{smodels}$_r$}
+\newcommand{\smodels}{\sysfont{smodels}}
+\newcommand{\sugar}{\sysfont{sugar}}
+\newcommand{\unclasp}{\sysfont{unclasp}}
+\newcommand{\wasp}{\sysfont{wasp}}
+\newcommand{\zchaff}{\sysfont{zchaff}}
+\newcommand{\zzz}{\sysfont{z3}}
+
+\newcommand{\aspif}{\sysfont{aspif}}
+
+\newcommand{\python}{Python}
+\newcommand{\lua}{Lua}
+\newcommand{\cpp}{C++}
+\newcommand{\java}{Java}
+
+% - latex ----------------------------------------------------------------------
+\newcounter{excounter}
+\newcommand{\labex}[1]{\refstepcounter{excounter}\label{#1}} % \index{\ensuremath{\PRG_{\ref{#1}}}}
+
+\newcommand{\myul}[2][blue]{\sethlcolor{#1}\hl{#2}\setulcolor{black}}
+
+\newcommand<>{\cunderline}[3]{\only<#1>{#3}\only<#2>{\underline{#3}}}
+\newcommand<>{\cem}[3]{\only<#1>{#3}\only<#2>{\ul{#3}}}
+\newcommand<>{\cgray}[3]{\only<#1>{#3}\only<#2>{\textcolor{gray}{#3}}}
+\newcommand<>{\colorize}[4]{\only<#1>{#4}\only<#2>{\textcolor{#3}{#4}}}
+
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\em}{\itshape}
+
+\mode<presentation>
+{
+  \usecolortheme{crane}
+  \usetheme{Frankfurt}
+}
+% \mode<presentation>
+% {
+%   \usecolortheme{dove}
+% }
+
+% \mode<presentation>
+% {
+% \useinnertheme[shadow=true]{rounded}
+% \useoutertheme{infolines}
+% \usecolortheme{dove}
+% \setbeamerfont{block title}{size={}}
+% }
+
+\title[Nesy]{Neural Answer Set Programming}
+
+\author{Robert Hoehndorf}
+
+\date{Knowledge, Representation and Reasoning}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{\only<1-2>{Informatics}\only<5->{\alert<7>{Declarative problem solving}}\only<3-4>{Traditional programming}}
+  \centering
+  \bigskip
+  \onslide<2-6>{%
+  \begin{center}
+    \alert<5->{\emph{``What is the problem?''}}
+    \quad\structure{versus}\quad
+    \alert<3-4>{\emph{``How to solve the problem?''}}
+  \end{center}}
+  \vfill
+  \centering{%
+    \begin{picture}(320,120)(-160,-60)
+    \put(-80,+40){\makebox(0,0){\framebox(80,20){Problem}}}
+    \put(-80,-40){\makebox(0,0){\framebox(80,20){\only<1-3,5>{Computer}\only<4>{\alert{\emph{Program}}}\only<6-7>{\alert{\emph{Representation}}}}}}
+    \put(+80,+40){\makebox(0,0){\framebox(80,20){Solution}}}
+    \put(+80,-40){\makebox(0,0){\framebox(80,20){Output}}}
+    \put(-80,+30){\vector(0,-1){60}}
+    \put(-40,-40){\vector(+1,0){80}}
+    \put(+80,-30){\vector(0,+1){60}}
+    \only<4>{\put(-120,  0){\makebox(0,0){\alert{\emph{Programming}}}}}
+    \only<6-7>{\put(-110,  0){\makebox(0,0){\alert{\emph{Modeling}}}}}
+    \put(+120,  0){\makebox(0,0){\only<4-7>{Interpreting}}}
+    \put(   0,-55){\makebox(0,0){\only<4>{\alert{\emph{Executing}}}\only<6-7>{\alert{\emph{Solving}}}}}
+  \end{picture}}
+\end{frame}
+%------------------------------------------------------------
+\section{Nutshell}
+%------------------------------------------------------------
+\begin{frame}{Answer Set Programming\\[-2pt]\small\emph{in a Nutshell}}
+  \begin{itemize}
+  \item <1->
+    ASP is an approach to \alert{declarative problem solving},
+    combining
+    \begin{itemize}
+    \item a rich yet simple modeling language
+    \item with high-performance solving capacities
+    \end{itemize}
+    % tailored to Knowledge Representation and Reasoning % (KRR)
+  \item <2-> ASP has its roots in
+    \begin{itemize}
+    \item (deductive) databases
+    \item logic programming (with negation)
+    \item (logic-based) knowledge representation and (nonmonotonic) reasoning
+    \item constraint solving (in particular, SATisfiability testing)
+    \end{itemize}
+  \item <3-5>
+    ASP allows for solving all search problems in $NP$ (and $NP^{NP}$)
+    \\in a uniform way % (being more compact than SAT)
+  \item <4-5>
+    ASP is versatile as reflected by the ASP solver \alert{\textit{clasp}},
+    winning\\ first places at ASP, CASC, MISC, PB, and SAT competitions
+  \item <5-5> ASP embraces many emerging application areas
+  \end{itemize}
+\end{frame}
+%------------------------------------------------------------
+% \input{time} % <<<<<<<<<
+%------------------------------------------------------------
+\begin{frame}{Answer Set Programming\\[-2pt]\small\emph{in a Hazelnutshell}}
+  \bigskip  
+  \bigskip
+  \begin{itemize}
+  \item <1->
+    ASP is an approach to \alert{declarative problem solving},
+    combining
+    \begin{itemize}
+    \item a rich yet simple modeling language
+    \item with high-performance solving capacities
+    \end{itemize}
+    tailored to \alert<1>{Knowledge Representation and Reasoning} % (KRR)
+  \end{itemize}
+  \bigskip  
+  \bigskip
+  \only<2>{%
+    \begin{center}
+      {\LARGE\alert{\textbf{ASP}\ =\ \textbf{DB}+\textbf{LP}+\textbf{KR}+\textbf{SAT}}}    
+    \end{center}}
+\end{frame}
+
+\begin{frame}{Paradigm shift}
+  \bigskip
+
+  \begin{description}
+
+  \item<1->[Theorem Proving based approach] (eg.\ Prolog, Resolution)
+    \begin{enumerate}
+    \item Provide a representation of the problem
+
+    \item A solution is given by a \alert{derivation} of a query
+    \end{enumerate}
+    \bigskip
+
+  \item<2->[Model Generation based approach] (eg.\ SATisfiability
+    testing, Tableau)
+    \begin{enumerate}
+    \item Provide a representation of the problem
+
+    \item A solution is given by a \alert{model} of the representation
+    \end{enumerate}
+  \end{description}
+  \bigskip
+  \begin{block}<4>{Automated planning, Kautz and Selman (ECAI'92)}
+      Represent planning problems as propositional theories
+      so that\\ models not proofs describe solutions    
+  \end{block}
+\end{frame}
+
+\begin{frame}{Paradigm shift}
+  \bigskip
+
+  \begin{description}
+
+  \item<1-2>[Theorem Proving based approach] (eg.\ Prolog)
+    \begin{enumerate}
+    \item Provide a representation of the problem
+
+    \item A solution is given by a \alert{derivation} of a query
+    \end{enumerate}
+    \bigskip
+
+  \item<1>[Model Generation based approach] (eg.\ SATisfiability testing)
+    \begin{enumerate}
+    \item Provide a representation of the problem
+
+    \item A solution is given by a \alert{model} of the representation
+    \end{enumerate}
+  \end{description}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{LP-style playing with blocks}
+  \begin{block}<1->{Prolog program}%
+    \small%
+\begin{semiverbatim}
+on(a,b).
+on(b,c).
+
+above(X,Y) :- on(X,Y).
+above(X,Y) :- on(X,Z), above(Z,Y).
+\end{semiverbatim}%
+    \vspace{-1ex}%
+  \end{block}
+  \begin{block}<2->{Prolog queries\only<4>{ \ (testing entailment)}\phantom{)}}%
+    \small%
+\begin{semiverbatim}
+?- above(a,c).
+true.      
+\pause[3]
+?- above(c,a).
+no.      
+\end{semiverbatim}
+    \vspace{-1ex}%
+  \end{block}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{LP-style playing with blocks}
+  \begin{block}<1->{Shuffled Prolog program}%
+    \small%
+\begin{semiverbatim}
+on(a,b).
+on(b,c).
+
+above(X,Y) :- above(X,Z), on(Z,Y).
+above(X,Y) :- on(X,Y).
+\end{semiverbatim}
+    \vspace{-1ex}%
+  \end{block}
+  \begin{block}<2->{Prolog queries\only<3>{ \ (answered via fixed execution)}\phantom{)}}%
+    \small%
+\begin{semiverbatim}
+?- above(a,c).
+\pause[3]
+Fatal Error: local stack overflow.
+\end{semiverbatim}
+    \vspace{-1ex}%
+  \end{block}
+\end{frame}
+%-------------------------------------------------------------
+\begin{frame}{Paradigm shift}
+  \bigskip
+
+  \begin{description}
+
+  \item<1>[Theorem Proving based approach] (eg.\ Prolog)
+    \begin{enumerate}
+    \item Provide a representation of the problem
+
+    \item A solution is given by a \alert{derivation} of a query
+    \end{enumerate}
+    \bigskip
+
+  \item<1-2>[Model Generation based approach] (eg.\ SATisfiability testing)
+    \begin{enumerate}
+    \item Provide a representation of the problem
+
+    \item A solution is given by a \alert{model} of the representation
+    \end{enumerate}
+  \end{description}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{SAT-style playing with blocks}
+  \begin{block}<1->{Formula}
+    \small
+    \medskip
+    \(
+    \begin{array}{rl}
+           & \ on(a,b)
+    \\
+    \wedge & \ on(b,c)
+    \\
+    \wedge & \left( on(X,Y) \to above(X,Y)\right) \\
+    \wedge & \left( on(X,Z) \wedge above(Z,Y) \to above(X,Y)\right)
+    \end{array}
+    \)
+    \medskip
+  \end{block}
+  \begin{block}<2->{Herbrand model\only<5->{ (among 426!)}\phantom{g!)}}
+    \small
+    \medskip
+    \(\
+    \left\{
+    \begin{array}{rrrrrr}
+            \alert<3>{on(a,b)},&    \alert<3>{on(b,c)},&    \alert<4>{on(a,c)},&    \alert<4>{on(b,b)},&
+      \\ \alert<3>{above(a,b)},& \alert<3>{above(b,c)},& \alert<3>{above(a,c)},& \alert<4>{above(b,b)},& \alert<4>{above(c,b)}
+    \end{array}
+    \right\}
+    \)
+    \medskip
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{ASP-style playing with blocks}
+  \begin{block}<only@1-3>{Logic program}%
+    \small%
+\begin{semiverbatim}
+on(a,b).
+on(b,c).
+
+above(X,Y) :- on(X,Y).
+above(X,Y) :- on(X,Z), above(Z,Y).
+\end{semiverbatim}
+  \end{block}
+  \begin{block}<only@4->{Logic program}%
+    \small%
+\begin{semiverbatim}
+on(a,b).
+on(b,c).
+
+above(X,Y) :- above(Z,Y), on(X,Z).
+above(X,Y) :- on(X,Y).
+\end{semiverbatim}
+  \end{block}
+  \begin{block}<2->{Stable Herbrand model\only<3->{ (and no others)}\phantom{)}}
+    \medskip
+      \(\
+      \{\ \mathtt{on(a,b),\; on(b,c),\; above(b,c),\; above(a,b),\; above(a,c)}\ \}
+      \)      
+    \bigskip
+  \end{block}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[c]{ASP versus LP}
+  \begin{center}\renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{lc|cr}
+      \alert{ASP}                           &&& \alert{Prolog}\\
+      \hline\hline
+      Model generation                      &&&    Query orientation\\\hline
+      Bottom-up                             &&&             Top-down\\\hline
+      Modeling language                     &&& Programming language\\\hline
+      \multicolumn{4}{c}{Rule-based format}\\
+      \hspace*{12pt} Instantiation          &&&     Unification \hspace*{12pt} \\[-3pt]
+      \hspace*{12pt} Flat terms             &&&    Nested terms \hspace*{12pt} \\\hline
+      {\footnotesize (Turing +)} $NP(^{NP})$&&& Turing
+    \end{tabular}
+  \end{center}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[c]{ASP versus SAT}
+  \begin{center}\renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{lc|cr}
+      \alert{ASP}                           &&& \alert{SAT}\\
+      \hline\hline
+      \multicolumn{4}{c}{Model generation}\\\hline
+      \multicolumn{4}{c}{Bottom-up}\\\hline
+      Constructive Logic                    &&& Classical Logic\\\hline
+      Closed (and open)                     &&& Open world reasoning\\[-5pt]
+      \qquad world reasoning                &&& \\\hline
+      Modeling language                     &&&             ---\\\hline
+      Complex reasoning modes               &&& Satisfiability testing\\
+      \hspace*{12pt}Satisfiability          &&& Satisfiability\hspace*{12pt}\\[-3pt]
+      \hspace*{12pt}Enumeration/Projection  &&& ---\hspace*{12pt}\\[-3pt]
+      \hspace*{12pt}Intersection/Union      &&& ---\hspace*{12pt}\\[-3pt]
+      \hspace*{12pt}Optimization            &&& ---\hspace*{12pt}\\\hline
+      {\footnotesize (Turing +)} $NP(^{NP})$&&& $NP$
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{\only<1>{Propositional} \only<1,3>{Normal} Logic Programs}
+  \begin{itemize}
+  \item<1-> 
+    A \alert{logic program}~$\Pi$ is a \alert{set of rules} of the form
+    \[\large
+    \underbrace{a\raisebox{-4pt}{}}_{\text{\alert{head}}}\leftarrow\underbrace{\raisebox{-4pt}{\ }b_1,\dots,b_m,\neg{c_1},\dots,\neg{c_n}\raisebox{-4pt}{\ }}_{\alert{\text{body}}}
+    \]
+    \begin{itemize}
+    \item $a$ and all $b_i,c_j$ are \alert{atoms} (propositional variables)
+    \item \alert{$\leftarrow$}, \alert{$,$}, \alert{$\neg$} denote \alert{if}, \alert{and}, and \alert{negation}
+    \item intuitive reading: \alert{head} must be true \alert{if body} holds
+    \end{itemize}
+    \medskip
+  \item<2-> 
+    Semantics given by \alert{stable models}, informally,\\
+    models of $\Pi$ justifying each true atom by some rule in $\Pi$
+    \bigskip
+  \item<only@3> \structure{Disclaimer} The following formalities apply to normal logic programs
+  \end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}{Some truth tabling, back to SAT}
+\vspace{-5pt}
+\[\qquad
+  \begin{array}{ccc|r@{\;}c@{\;}l}
+    a&b&c& \ (\neg b\to a) &\wedge& (b\to c) \ \\
+    \hline
+                       \false &                   \false &                   \false &\only<2-4>{\color<4>{red}{  (\only<2>{\neg\false}\only<3->{\true}\to\false)}}\only<5-7>{\false}&\only<2-7>{\wedge}\only<8-9>{              \false }&\only<2-6>{\color<6>{green}{(\false\to\false)}}\only<7-7>{\true}\\
+                       \false &                   \false &                   \true &\only<2-4>{\color<4>{red}{  (\only<2>{\neg\false}\only<3->{\true}\to\false)}}\only<5-7>{\false}&\only<2-7>{\wedge}\only<8-9>{              \false }&\only<2-6>{\color<6>{green}{(\false\to\true)}}\only<7-7>{\true}\\
+                       \false &                   \true &                   \false &\only<2-6>{\color<6>{green}{(\only<2>{\neg\true}\only<3->{\false}\to\false)}}\only<7-7>{\true}&\only<2-7>{\wedge}\only<8-9>{              \false }&\only<2-4>{\color<4>{red}{  (\true\to\false)}}\only<5-7>{\false}\\
+    \color<8-9>{green}{\false}&\color<8-9>{green}{\true}&\color<8-9>{green}{\true}&\only<2-6>{\color<6>{green}{(\only<2>{\neg\true}\only<3->{\false}\to\false)}}\only<7-7>{\true}&\only<2-7>{\wedge}\only<8-9>{\color{green}{\true}}&\only<2-6>{\color<6>{green}{(\true\to\true)}}\only<7-7>{\true}\\
+    \color<8-9>{green}{\true}&\color<8-9>{green}{\false}&\color<8-9>{green}{\false}&\only<2-6>{\color<6>{green}{(\only<2>{\neg\false}\only<3->{\true}\to\true)}}\only<7-7>{\true}&\only<2-7>{\wedge}\only<8-9>{\color{green}{\true}}&\only<2-6>{\color<6>{green}{(\false\to\false)}}\only<7-7>{\true}\\
+    \color<8-9>{green}{\true}&\color<8-9>{green}{\false}&\color<8-9>{green}{\true}&\only<2-6>{\color<6>{green}{(\only<2>{\neg\false}\only<3->{\true}\to\true)}}\only<7-7>{\true}&\only<2-7>{\wedge}\only<8-9>{\color{green}{\true}}&\only<2-6>{\color<6>{green}{(\false\to\true)}}\only<7-7>{\true}\\
+                       \true &                   \true &                   \false &\only<2-6>{\color<6>{green}{(\only<2>{\neg\true}\only<3->{\false}\to\true)}}\only<7-7>{\true}&\only<2-7>{\wedge}\only<8-9>{              \false }&\only<2-4>{\color<4>{red}{  (\true\to\false)}}\only<5-7>{\false}\\
+    \color<8-9>{green}{\true}&\color<8-9>{green}{\true}&\color<8-9>{green}{\true}&\only<2-6>{\color<6>{green}{(\only<2>{\neg\true}\only<3->{\false}\to\true)}}\only<7-7>{\true}&\only<2-7>{\wedge}\only<8-9>{\color{green}{\true}}&\only<2-6>{\color<6>{green}{(\true\to\true)}}\only<7-7>{\true}
+  \end{array}
+\]
+\begin{itemize}
+\item<only@9> 
+We get four models:
+$\{b,c\}$,
+$\{a\}$,
+$\{a,c\}$, and
+$\{a,b,c\}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[c]{ASP modeling, grounding, and solving}
+  \begin{center}
+    \small
+    \setlength{\unitlength}{.75pt}
+    \begin{picture}(420,200)(-210,-35)
+      \put(-200,110){\framebox(80,40){Problem}}
+      \put(-200,-20){\framebox(80,40){\shortstack{Logic\\Program}}}
+      \put(-80,-15){\framebox(60,30){Grounder}}
+      \put(  20,-15){\framebox(60,30){Solver}}
+      \put( 120,-20){\framebox(80,40){\shortstack{Stable\\Models}}}
+      \put( 120,110){\framebox(80,40){Solution}}
+      \put(-120,0){\vector(1,0){40}}
+      \put( -20,0){\vector(1,0){40}}
+      \put(  80,0){\vector(1,0){40}}
+      \put(-160,110){\vector(0,-1){90}}
+      \put( 160, 20){\vector(0, 1){90}}
+      \put(-217, 62.5){\emph{Modeling}}
+      \put( 165, 62.5){\emph{Interpreting}}
+      \put(   0,-32.5){\makebox(0,0){\emph{Solving}}}
+    \end{picture}
+  \end{center}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[c]{SAT solving}
+  \begin{center}
+    \small
+    \setlength{\unitlength}{.75pt}
+    \begin{picture}(420,200)(-210,-35)
+      \put(-200,110){\framebox(80,40){Problem}}
+      \put(-200,-20){\framebox(80,40){\shortstack{Formula\\(CNF)}}}
+      \put(  20,-15){\framebox(60,30){Solver}}
+      \put( 120,-20){\framebox(80,40){\shortstack{Classical\\Models}}}
+      \put( 120,110){\framebox(80,40){Solution}}
+      \put(-120,0){\vector(1,0){140}}
+      \put(  80,0){\vector(1,0){40}}
+      \put(-160,110){\vector(0,-1){90}}
+      \put( 160, 20){\vector(0, 1){90}}
+      \put(-240, 62.5){\emph{Programming}}
+      \put( 165, 62.5){\emph{Interpreting}}
+      \put(   0,-32.5){\makebox(0,0){\emph{Solving}}}
+    \end{picture}
+  \end{center}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[c]{Rooting ASP solving}
+  \begin{center}
+    \small
+    \setlength{\unitlength}{.75pt}
+    \begin{picture}(420,200)(-210,-35)
+      \put(-200,110){\framebox(80,40){Problem}}
+      \put(-200,-20){\framebox(80,40){\shortstack{Logic\\Program}}}\put(-160,-30){\makebox(0,0){\bf\only<2->{\alert{LP}}}}
+      \put(-80,-15){\framebox(60,30){Grounder}}\put(-50,-30){\makebox(0,0){\bf\only<2->{\alert{DB}}}}
+      \put(  20,-15){\framebox(60,30){Solver}}\put(50,-30){\makebox(0,0){\bf\only<2->{\alert{SAT}}}}
+      \put( 120,-20){\framebox(80,40){\shortstack{Stable\\Models}}}\put(160,-30){\makebox(0,0){\bf\only<2->{\alert{DB+KR+LP}}}}
+      \put( 120,110){\framebox(80,40){Solution}}
+      \put(-120,0){\vector(1,0){40}}
+      \put( -20,0){\vector(1,0){40}}
+      \put(  80,0){\vector(1,0){40}}
+      \put(-160,110){\vector(0,-1){90}}
+      \put( 160, 20){\vector(0, 1){90}}
+      \put(-217, 62.5){\emph{Modeling}}\put(-155, 62.5){\bf\only<2->{\alert{KR}}}
+      \put( 165, 62.5){\emph{Interpreting}}
+      \put(   0,-32.5){\makebox(0,0){\emph{Solving}}}
+    \end{picture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Problem solving in ASP: Syntax}
+\vfill
+\begin{center}{%
+\begin{picture}(300,120)(-150,-60)
+\put(-80,+40){\makebox(0,0){\framebox(80,20){Problem}}}
+\put(-80,-40){\makebox(0,0){\framebox(80,20){\alert{Logic Program}}}}
+\put(+80,+40){\makebox(0,0){\framebox(80,20){Solution}}}
+\put(+80,-40){\makebox(0,0){\framebox(80,20){Stable Models}}}
+\put(-80,+30){\vector(0,-1){60}}
+\put(-40,-40){\vector(+1,0){80}}
+\put(+80,-30){\vector(0,+1){60}}
+\put(-110,  0){\makebox(0,0){{Modeling}}}
+\put(+120,  0){\makebox(0,0){{Interpreting}}}
+\put(   0,-55){\makebox(0,0){{Solving}}}
+\end{picture}}
+\end{center}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{Normal logic programs}
+  \begin{itemize}
+  \item <1->
+    A % (normal)
+               \alert{logic program}, $\PRG$, over a set $\mathcal{A}$ of atoms is a finite \alert{set} of rules
+  \item <1->
+    A (normal) \alert{rule}, $r$, is of the form
+    \[
+    a_0\leftarrow a_1,\dots,a_m,\naf{a_{m+1}},\dots,\naf{a_n}
+    \]
+    where $0\leq m\leq n$ and each $a_i\in{\mathcal{A}}$ is an atom for $0\leq i\leq n$
+    \pause
+  \item <2->
+    \structure{Notation}
+    \begin{eqnarray*}
+      \head{r}   &=& a_0
+      \\
+      \body{r}   &=& \{a_1,\dots,a_m,\naf{a_{m+1}},\dots,\naf{a_n}\}
+      \\
+      \pbody{r}  &=& \{a_1,\dots,a_m\}
+      \\
+      \nbody{r}  &=& \{a_{m+1},\dots,a_n\}
+      \\
+      \atom{\PRG} &=& \textstyle\bigcup_{r\in\PRG}\left(\{\head{r}\}\cup\pbody{r}\cup\nbody{r}\right)
+      \\
+      \body{\PRG} &=& \{\body{r}\mid r\in\PRG\} 
+    \end{eqnarray*}%
+  \item <3-> A program $\PRG$ is \alert{positive} if $\nbody{r}=\emptyset$ for all $r\in\PRG$
+  \end{itemize}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}[c]{Rough notational convention}
+
+We sometimes use the following notation interchangeably 
+\\
+in order to stress the respective view:
+
+\bigskip{}
+
+\begin{center}
+  \begin{tabular}{|l|ccccccc|}
+    \hline
+                 &             &             &            &            &                 & default               & classical         \\
+                 & true, false & if          & and        & or         & iff             &          negation     &           negation\\
+                 \hline\hline                                                        
+    source code  &             &\texttt{:-}  & \texttt{,} & \texttt{|} &                 & \texttt{not}          & \texttt{-}\\
+    logic program&             &$\leftarrow$ & $,$        & $;$        &                 & $\sim$                & $\neg$\\
+    formula      & $\bot,\top$ &$\rightarrow$& $\wedge$   & $\vee$     &$\leftrightarrow$& $\sim$                & $\neg$\\
+    \hline
+  \end{tabular}\end{center}
+\end{frame}
+%------------------------------------------------------------
+\section{Semantics}
+%------------------------------------------------------------
+
+
+
+\begin{frame}{Problem solving in ASP: Semantics}
+\vfill
+\begin{center}{%
+\begin{picture}(300,120)(-150,-60)
+\put(-80,+40){\makebox(0,0){\framebox(80,20){Problem}}}
+\put(-80,-40){\makebox(0,0){\framebox(80,20){Logic Program}}}
+\put(+80,+40){\makebox(0,0){\framebox(80,20){Solution}}}
+\put(+80,-40){\makebox(0,0){\framebox(80,20){\alert{Stable Models}}}}
+\put(-80,+30){\vector(0,-1){60}}
+\put(-40,-40){\vector(+1,0){80}}
+\put(+80,-30){\vector(0,+1){60}}
+\put(-110,  0){\makebox(0,0){{Modeling}}}
+\put(+120,  0){\makebox(0,0){{Interpreting}}}
+\put(   0,-55){\makebox(0,0){{Solving}}}
+\end{picture}}
+\end{center}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}[c]{Formal Definition\\
+  \normalsize Stable models of positive programs}
+  \begin{itemize}
+  \item<1-> A set of atoms $X$ is \alert{closed under} a positive program $\Pi$ iff
+    \\for any $r\in\Pi$, $\head{r}\in X$ whenever $\pbody{r}\subseteq X$
+    \begin{itemize}
+    \item $X$ corresponds to a model of $\Pi$ (seen as a formula)
+    \end{itemize}
+    \medskip
+  \item<2-> The \alert{smallest} set of atoms which is closed under a positive
+    program $\Pi$ is denoted by $\Cn{\Pi}$
+    \begin{itemize}
+    \item $\Cn{\Pi}$ corresponds to the $\subseteq$-smallest model of $\Pi$
+    \end{itemize}
+    \medskip
+  \item<3-> The set $\Cn{\Pi}$ of atoms is the \alert{stable model} of a \emph{positive} program $\Pi$
+  \end{itemize}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{Some ``logical'' remarks}
+  \begin{itemize}
+  \item <1-> Positive rules are also referred to as \alert<1-2>{definite clauses}
+    \begin{itemize}
+    \item Definite clauses are disjunctions with \alert<1>{exactly one} positive atom:
+      \[
+      a_0\vee\neg a_1\vee\dots\vee\neg a_m
+      \]
+    \item A set of definite clauses has a (unique) \alert<3>{smallest model}
+    \end{itemize}
+    \medskip
+  \item<2-> \alert<2>{Horn clauses} are clauses with \alert<2>{at most} one positive atom
+    \begin{itemize}
+    \item Every definite clause is a Horn clause but not vice versa
+    \item Non-definite Horn clauses can be regarded as integrity constraints
+      \smallskip
+    \item A set of Horn clauses has a \alert<3>{smallest model} or none
+    \end{itemize}
+    \medskip
+  \item<3-> This \alert<3>{smallest model} is the intended semantics of such sets of clauses
+    \begin{itemize}
+    \item Given a positive program $\Pi$,
+    $\Cn{\Pi}$ corresponds to the smallest model of the set of
+    definite clauses corresponding to $\Pi$
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+%----------------------------------------------------------------------
+\begin{frame}{Basic idea}
+\pause
+\begin{columns}
+  \begin{column}<1-7>[t]{0.6\linewidth}
+    Consider the logical formula \alert<2>{$\Phi$}
+    and its three (classical) models:
+    \visible<3>{%
+    \begin{picture}(0,0)(0,80)
+      \alert{%
+      \put(-50,50){\vector(2,-1){67}}
+      \(
+      \begin{array}{|rcl|}
+        \hline
+        p&\mapsto&1\\
+        q&\mapsto&1\\
+        r&\mapsto&0\\
+        \hline
+      \end{array}
+      \)}
+    \end{picture}}
+    \[
+    \alert<3>{\{p,q\}}, \{q,r\}, \text{ and }\{p,q,r\}  
+    \]
+  \end{column}
+  \begin{column}<1-7>[t]{0.35\linewidth}
+    \(\arrayrulewidth=.1pt
+    \begin{array}[t]{l|c|}
+      \cline{2-2}
+      \alert<2,4>{\Phi}&    
+      q
+      \ \wedge \
+      (q\wedge\neg r\to p)\\
+      \cline{2-2}
+    \end{array}
+    \)
+  \end{column}
+\end{columns}
+
+\bigskip
+
+\uncover<5->{%
+\begin{columns}
+  \begin{column}<5-8>[t]{0.6\linewidth}
+    Formula \alert<5>{$\Phi$} has one stable model,\\ often called \alert<5>{answer set}: 
+    \[
+    \alert<5>{\{p,q\}}
+    \]
+  \end{column}
+  \begin{column}[t]{0.35\linewidth}
+  \uncover<6-8>{%
+    \(\arrayrulewidth=.1pt
+    \begin{array}[t]{l|rcl|}
+      \cline{2-4}
+      \alert<6>{\Pi_\Phi}&
+       q&\leftarrow&\\
+      &\alert<8>{p}&\alert<8>{\leftarrow}& \alert<8>{q,\ \naf{r}}\\
+      \cline{2-4}
+    \end{array}
+    \)}
+\end{column}}
+\end{columns}
+
+\vfill
+
+\uncover<7->{%
+Informally, a set $X$ of atoms is a \alert{stable model} of a logic program $\Pi$
+\begin{itemize}
+\item if $X$ is a (classical) model of $\Pi$ 
+  and
+\item if all atoms in $X$ are \alert{justified} by some rule in $\Pi$
+\end{itemize}
+\pause
+{\small (rooted in intuitionistic logics HT~(Heyting,~1930) and G3~(G\"odel,~1932))}
+}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{Formal Definition\\
+    \normalsize Stable model of normal programs}
+  
+  \begin{itemize}
+  \item <1-> The \alert{reduct}, $\reduct{\Pi}{X}$, of a program $\Pi$ relative to
+    a set $X$ of atoms is defined by
+    \[
+    \reduct{\Pi}{X}
+    =
+    \{\head{r}\leftarrow\pbody{r} \mid r\in \Pi \text{ and } \nbody{r}\cap X=\emptyset\}
+    \]
+
+  \item <2-> A set $X$ of atoms is a \alert{stable model} of a program $\Pi$,
+    if $\Cn{\reduct{\Pi}{X}}=X$
+    \bigskip
+    \bigskip
+  \item<3-> \structure{Note} $\Cn{\reduct{\Pi}{X}}$ is the $\subseteq$--smallest (classical) model of \reduct{\Pi}{X}
+% \item<3-> \structure{Intuition:} $X$ is \alert{stable} under \emph{``applying rules from $\Pi$''}
+  \item<3-> \structure{Note} Every atom in $X$ is justified by an \emph{``applying rule from $\Pi$''}
+  \end{itemize}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{A closer look at ${\reduct{\Pi}{X}}$}
+
+  \bigskip
+  \begin{itemize}
+  \item<1-> 
+    In other words, given a set $X$ of atoms from $\Pi$,
+    
+    \bigskip
+    
+    $\reduct{\Pi}{X}$ is obtained from $\Pi$ by \alert<1>{deleting} 
+    \begin{enumerate}
+    \item each \alert<1>{rule} having \alert<2>{\naf{a}} in its body with $a\in X$
+      
+      and then
+    \item all \alert<1>{negative atoms} of the form \alert<2>{\naf{a}}  \\
+      in the bodies of the remaining rules
+    \end{enumerate}
+    \bigskip
+  \item<2-> \structure{Note} Only \alert<2>{negative body literals} are evaluated wrt $X$ 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{A first example}
+\[
+\Pi
+=
+\left\{
+    p \leftarrow p, \ 
+    q \leftarrow \only<-7>{\naf{p}}
+\right\}
+\]  
+\pause
+\newcommand{\PIip}{%
+    \begin{array}[t]{lll}
+      p &\leftarrow&p
+      \\
+       &&
+    \end{array}}
+\newcommand{\PIop}{%
+    \begin{array}[t]{lll}
+      p &\leftarrow&p
+      \\
+      q &\leftarrow&
+    \end{array}}
+\[
+\begin{array}{c|cl|ccr}
+       X                   &\ &\uncover<3->{\Pi^X}&\ &\Cn{\Pi^X}             &                              \\\hline
+\{\phantom{p         ,q}\} &  &\uncover<3->{\PIop}&  &\uncover<3->{\{q\}}    &\uncover<4->{\KO}             \\\hline
+\{         p\phantom{,q}\} &  &\uncover<3->{\PIip}&  &\uncover<3->{\emptyset}&  \only<5-7>{\KO}\\\hline
+\{\phantom{p,}        q \} &  &\uncover<3->{\PIop}&  &\uncover<3->{\{q\}}    &\uncover<6->{\OK}             \\\hline
+\{         p         ,q \} &  &\uncover<3->{\PIip}&  &\uncover<3->{\emptyset}&\uncover<7->{\KO} 
+\end{array}
+\]
+
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{A second example}
+\[
+\Pi
+=
+\left\{
+    p \leftarrow \only<-6>{\naf{q}}, \ 
+    q \leftarrow \only<-6>{\naf{p}}
+\right\}
+\]  
+\pause
+% \newcommand{\PI}{%
+%     \begin{array}[t]{lll}
+%       p &\leftarrow& \naf{q}
+%       \\
+%       q &\leftarrow& \naf{p}
+%     \end{array}}
+\newcommand{\PIipiq}{%
+    \begin{array}[t]{lll}
+      &&
+      \\
+      &&
+    \end{array}}
+\newcommand{\PIipoq}{%
+    \begin{array}[t]{lll}
+      p &\leftarrow&
+      \\
+      &&
+    \end{array}}
+\newcommand{\PIopiq}{%
+    \begin{array}[t]{lll}
+      &&
+      \\
+      q &\leftarrow&
+    \end{array}}
+\newcommand{\PIopoq}{%
+    \begin{array}[t]{lll}
+      p &\leftarrow&
+      \\
+      q &\leftarrow&
+    \end{array}}
+\[
+\begin{array}{c|cl|ccr}
+       X                   &\ &{\Pi^X}&\ &\Cn{\Pi^X} &              \\\hline
+\{\phantom{p         ,q}\} &  &\PIopoq&  &\{p,q\}    &\uncover<3->{\KO}\\\hline
+\{         p\phantom{,q}\} &  &\PIipoq&  &\{p\}      &\uncover<4->{\OK}\\\hline
+\{\phantom{p,}        q \} &  &\PIopiq&  &\{q\}      &\uncover<5->{\OK}\\\hline
+\{         p         ,q \} &  &\PIipiq&  &\emptyset  &    \only<6>{\KO}
+\end{array}
+\]
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{A third example}
+\[
+\Pi
+=
+\left\{
+    p \leftarrow \only<-4>{\naf{p}}
+\right\}
+\]  
+\pause\bigskip
+% \newcommand{\PI}{%
+%     \begin{array}[t]{lll}
+%       p &\leftarrow& \naf{p}
+%     \end{array}}
+\newcommand{\PIip}{%
+    \begin{array}[t]{l}
+    \end{array}}
+\newcommand{\PIop}{%
+    \begin{array}[t]{l}
+      p \leftarrow \
+    \end{array}}
+\[
+\begin{array}{l|cl|ccr}
+             X  &\ &\Pi^X&\ &\Cn{\Pi^X} &                  \\\hline
+\{\phantom{p}\} &  &\PIop&  &\{p\}      &\uncover<3->{\KO} \\\hline
+\{         p \} &  &\PIip&  &\emptyset  &    \only<4>{\KO}
+\end{array}
+\]
+\bigskip
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{Some properties}
+\bigskip\bigskip
+  \begin{itemize}
+  \item<1-> A logic program may have zero, one, or multiple stable models!
+
+  \item<2-> If $X$ is a  stable model of a logic program $\Pi$,
+
+    then $X$ is a model of $\Pi$ (seen as a formula)
+  \item<2-> If $X$ and $Y$ are stable models of a \emph{normal} program $\Pi$,
+
+    then $X\not\subset Y$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Programs with Variables}
+  Let $\Pi$ be a logic program
+  \begin{itemize}
+  \item<1-> Let $\mathcal{T}$ be a set of \invisible<2>{(}variable-free\invisible<2>{)} \alert<1-2>{terms}\visible<2>{ (also called \alert{Herbrand universe})}
+  \item<1-> Let $\mathcal{A}$ be a set of                (variable-free) \alert<1-2>{atoms} constructable from $\mathcal{T}$
+    \visible<2>{\\ (also called \alert{alphabet} or \alert{Herbrand base})}
+  \item<3-> \alert<3>{Ground Instances} of $r\in\Pi$: Set of variable-free rules obtained by
+    replacing all variables in $r$ by elements from $\mathcal{T}$:
+    \[
+    \mathit{ground}(r)=\{r\theta\mid\theta:\mathit{var}(r)\rightarrow \mathcal{T} \text{ and } \mathit{var}(r\theta)=\emptyset\}
+    \]
+    where $\mathit{var}(r)$ stands for the set of all variables occurring in $r$;
+    
+    $\theta$ is a (ground) substitution
+    \medskip
+  \item<4-> \alert{Ground Instantiation} of $\Pi$: \quad
+    \(
+    \mathit{ground}(\Pi)=\textstyle\bigcup_{r\in\Pi}\mathit{ground}(r)
+    \)
+  \end{itemize}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{An example}
+  \small
+  \[
+  \begin{array}{@{}r@{\,}c@{\,}l}
+    \Pi
+    &=&
+    \left\{
+      \ r(a,b)\leftarrow, \ r(b,c)\leftarrow, \ t(X,Y) \leftarrow r(X,Y) \
+    \right\}
+    \\[1ex]
+    \mathcal{T}&=&\{a,b,c\}
+    \\[1ex]
+    \mathcal{A}&=&\left\{
+      \begin{array}{@{\,}c@{\,}}
+        r(a,a),r(a,b),r(a,c), r(b,a),r(b,b),r(b,c), r(c,a),r(c,b),r(c,c),
+        \\
+        \!\! t(a,a),t(a,b),t(a,c), t(b,a),t(b,b),t(b,c), t(c,a),t(c,b),t(c,c)
+      \end{array}
+    \right\}    
+  \end{array}
+  \]
+  \pause
+  \[
+  \mathit{ground}(\Pi)
+  =
+  \left\{
+    \begin{array}{l@{\,}c@{\,}l@{\,}l@{\,}c@{\,}l@{\,}l@{\,}c@{\,}l@{\,}}
+      r(a,b)&\leftarrow&, &&&\\
+      r(b,c)&\leftarrow&, &&&\\
+      \onslide<-2>{t(a,a)}&\onslide<-2>{\leftarrow}&\onslide<-2>{r(a,a),}&\onslide<-2>{t(b,a)}&\onslide<-2>{\leftarrow}&\onslide<-2>{r(b,a),}&\onslide<-2>{t(c,a)}&\onslide<-2>{\leftarrow}&\onslide<-2>{r(c,a),} \\
+      t(a,b)&\leftarrow&\onslide<-2>{r(a,b)},&\onslide<-2>{t(b,b)}&\onslide<-2>{\leftarrow}&\onslide<-2>{r(b,b),}&\onslide<-2>{t(c,b)}&\onslide<-2>{\leftarrow}& \onslide<-2>{r(c,b),}\\
+      \onslide<-2>{t(a,c)}&\onslide<-2>{\leftarrow}&\onslide<-2>{r(a,c),}&t(b,c)&\leftarrow&\onslide<-2>{r(b,c),}&\onslide<-2>{t(c,c)}&\onslide<-2>{\leftarrow}&\onslide<-2>{r(c,c)} \\
+    \end{array}
+  \right\}
+  \]
+
+  \begin{itemize}
+  \item<3-> \alert{Intelligent Grounding} aims at reducing the ground instantiation
+  \end{itemize}
+
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}{Stable models of programs with Variables}
+  
+  \bigskip
+
+  Let $\Pi$ be a normal logic program with variables
+  
+  \bigskip
+  \begin{itemize}
+  \item<2-> 
+  A set $X$ of (\alert{ground}) atoms is a \alert{stable model} of $\Pi$,
+  \par\medskip
+  if $\Cn{\reduct{\alert{\mathit{ground}(}\Pi\alert{)}}{X}}=X$
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Problem solving in ASP: Extended Syntax}
+\vfill
+\begin{center}{%
+\begin{picture}(300,120)(-150,-60)
+\put(-80,+40){\makebox(0,0){\framebox(80,20){Problem}}}
+\put(-80,-40){\makebox(0,0){\framebox(80,20){\alert{Logic Program}}}}
+\put(+80,+40){\makebox(0,0){\framebox(80,20){Solution}}}
+\put(+80,-40){\makebox(0,0){\framebox(80,20){Stable Models}}}
+\put(-80,+30){\vector(0,-1){60}}
+\put(-40,-40){\vector(+1,0){80}}
+\put(+80,-30){\vector(0,+1){60}}
+\put(-110,  0){\makebox(0,0){{Modeling}}}
+\put(+120,  0){\makebox(0,0){{Interpreting}}}
+\put(   0,-55){\makebox(0,0){{Solving}}}
+\end{picture}}
+\end{center}
+\end{frame}
+%------------------------------------------------------------
+\begin{frame}[fragile]{Language Constructs}
+%\pause
+  \begin{itemize}
+  \item<1> \alert<1>{Variables} (over the Herbrand Universe)
+    \begin{itemize}
+    \item \alert<1>{\texttt{p(X) :- q(X)}} \ \ over constants \ \alert<1>{$\{\mathtt{a},\mathtt{b},\mathtt{c}\}$}
+      stands for
+      \\\qquad
+      \alert<1>{\texttt{p(a) :- q(a), p(b) :- q(b), p(c) :- q(c)}}
+    \end{itemize}
+  \item<1> \alert<1>{Conditional Literals}
+    \begin{itemize}
+    \item \texttt{p :- \alert<1>{q(X) : r(X)}} \ \ given \ \texttt{\alert<1>{r(a)}, \alert<1>{r(b)}, \alert<1>{r(c)}}
+      stands for
+      \\\qquad
+      \texttt{p :- \alert<1>{q(a), q(b), q(c)}}
+     \end{itemize}
+  \item<1> \alert<1>{Disjunction}
+    \begin{itemize}
+    \item \texttt{\alert<1>{p(X) | q(X)} :- r(X)}
+    \end{itemize}
+  \item<1> \alert<1>{Integrity Constraints}
+    \begin{itemize}
+    \item \alert<1>{\texttt{ :- q(X), p(X)}}
+    \end{itemize}
+  \item<1> \alert<1>{Choice}
+    \begin{itemize}
+    \item \texttt{\alert<1>{2 \{ p(X,Y) : q(X) \} 7} :- r(Y)}
+    \end{itemize}
+  \item<1> \alert<1>{Aggregates}
+    \begin{itemize}
+    \item \texttt{s(Y) :- r(Y), \alert<1>{2 \#count \{ p(X,Y) : q(X) \} 7}}
+    \item also: \texttt{\#sum, \#avg, \#min, \#max, \#even, \#odd}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Problem solving in ASP: Reasoning Modes}
+\vfill
+\begin{center}{%
+\begin{picture}(300,120)(-150,-60)
+\put(-80,+40){\makebox(0,0){\framebox(80,20){Problem}}}
+\put(-80,-40){\makebox(0,0){\framebox(80,20){Logic Program}}}
+\put(+80,+40){\makebox(0,0){\framebox(80,20){Solution}}}
+\put(+80,-40){\makebox(0,0){\framebox(80,20){\alert{Stable Models}}}}
+\put(-80,+30){\vector(0,-1){60}}
+\put(-40,-40){\vector(+1,0){80}}
+\put(+80,-30){\vector(0,+1){60}}
+\put(-110,  0){\makebox(0,0){{Modeling}}}
+\put(+120,  0){\makebox(0,0){{Interpreting}}}
+\put(   0,-55){\makebox(0,0){{Solving}}}
+\end{picture}}
+\end{center}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}{Reasoning Modes}
+  \vfill
+  \begin{itemize}
+  \item Satisfiability
+  \item Enumeration$^\dagger$
+  \item Projection$^\dagger$
+  \item Intersection$^\ddagger$
+  \item Union$^\ddagger$
+  \item Optimization
+%  \item Sampling
+    \medskip
+  \item and combinations of them
+  \end{itemize}
+  \vfill
+  {\footnotesize
+  \begin{itemize}
+  \item []\hfill $^\dagger$ without solution recording
+  \item []\hfill $^\ddagger$ without solution enumeration
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{Guiding principle}
+  \bigskip
+  \begin{itemize}
+  \item<1-> \structure{Elaboration Tolerance} \ (McCarthy, 1998)
+    \medskip
+    
+    {\itshape
+    ``A formalism is \alert<1>{elaboration tolerant} \textnormal{[if]} it is convenient 
+    \\\hspace{2pt} to modify a set of facts expressed in the formalism 
+    \\\hspace{2pt} to take into account new phenomena or changed circumstances.''
+    }
+
+    \bigskip
+  \item<2-> \structure{Uniform problem representation}
+    \medskip
+
+    For solving a problem instance \textbf{I} of a problem class \textbf{C},
+    \begin{itemize}
+    \item \makebox[7pt]{\textbf{I}} is represented as a set of facts $\Pi_{\textbf{I}}$,
+    \item \textbf{C} is represented as a set of rules $\Pi_{\textbf{C}}$, and
+      \medskip
+    \item $\Pi_{\textbf{C}}$ can be used to solve all problem instances in \textbf{C}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]{Basic methodology}
+
+\begin{block}{Methodology}
+\Large \alert{Generate} and \alert{Test} \quad (or: Guess and Check)
+\end{block}
+
+\medskip
+
+\begin{description}
+\item[Generator] Generate potential stable model candidates
+
+  (typically through non-deterministic constructs)
+\item[Tester] Eliminate invalid candidates
+
+  (typically through integrity constraints)
+\end{description}
+
+\pause
+\medskip
+
+\begin{block}{Nutshell}
+  \smallskip\large
+  Logic program \ = \ Data + Generator + Tester \ (\,+ Optimizer)
+  \smallskip
+\end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{More information on ASP}
+
+  \url{https://potassco.org/}
+  
+\end{frame}
+
+\begin{frame}<Neural ASP>
+  \begin{itemize}
+  \item same idea as in DeepProbLog: treat neural network output as
+    the probability distribution over atomic facts
+  \item combine symbolic and sub-symbolic computation
+  \item ASP: includes {\em common sense} reasoning (defaults,
+    exceptions)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Basics}
+  \begin{itemize}
+  \item neural network $M$:
+    \begin{itemize}
+    \item input: arbitrary tensor
+    \item output: matrix in $\Re^{e \times n}$; $e$: number of random
+      events; $n$: number of possible outcomes for each event
+    \item each {\em row} of the output is the probability distribution
+      of the outcomes of each event
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example: digit classification}
+  \begin{itemize}
+  \item input: image of the digit (as tensor)
+  \item output matrix $\Re^{e \times n}$
+  \item $e$: 1
+  \item $n$: 10
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example: edge classification}
+  (output a Boolean for each edge in a graph $G = (V, E)$)
+  \begin{itemize}
+  \item input: graph as tensor
+  \item output matrix $\Re^{e \times n}$
+  \item $e$: $|E|$
+  \item $n$: 2
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Preliminaries}
+  \begin{itemize}
+  \item given input tensor $\mathbf{t}$, $M(\mathbf{t})$ is the output
+    matrix of $M$
+  \item $M(\mathbf{t})[i, j]$, with $i \in \{1,...,e\}$,
+    $j \in \{1,...,n\}$ is the probability of the $j$-th outcome of
+    the $i$-th event upon the input $\mathbf{t}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Preliminaries}
+  \begin{itemize}
+  \item introduce a {\em neural atom} in an answer set program:
+  $nn(m(e, t), [v_1,...,v_n])$
+  \begin{itemize}
+  \item $nn$ a reserved keyword
+  \item $m$ the identifier of the ANN $M$
+  \item $t$ is a list of terms that serves as a ``pointer'' to an
+    input tensor; there is a mapping $D$ that turns $t$ into an input
+    tensor
+  \item $v_1,...,v_n$ represents all $n$ possible outcomes of each
+    event in $e$
+  \item each neural atom introduces propositional atoms of the form
+    $c = v$, where $c \in \{m_1(t),..., m_e(t)\}$ and
+    $v \in \{v_1,..., v_n\}$
+  \item the output of the neural network $m$ provides the
+    probabilities of the introduced atoms
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example: MNIST}
+  \begin{itemize}
+  \item $M_{digit}$ is MNIST digit classifier
+  \item input: (tensor of an) image of a digit
+  \item output: in $\Re^{1 \times 10}$
+  \item neural atom: $nn(digit(1, d), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])$
+  \item introduces atoms $digit_1(d) = 0$, ..., $digit_1(d) = 9$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example: Shortest Path}
+  Assume graph with exactly 24 edges
+  \begin{itemize}
+  \item input: graph as tensor, start and end nodes
+  \item output in $\Re^{24 \times 2}$ (the path)
+  \item neural atom: $nn(sp(24, g), [TRUE, FALSE])$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neural ASP Programs}
+  \begin{itemize}
+  \item a Neural ASP Program $\Pi$ is the union of $\Pi^{ASP}$ and
+    $\Pi^{nn}$
+    \begin{itemize}
+    \item $\Pi^{ASP}$: standards ASP rules
+    \item $\Pi^{nn}$: set of neural atoms
+    \item $sigma^{nn}$ is the set of all atoms $m_i(t) = v_j$ derived
+      from all neural atoms in $\Pi^{nn}$
+    \end{itemize}
+  \item for each rule $Head \leftarrow Body$ in $\Pi^{ASP}$, no atom
+    in $\sigma^{nn}$ is allowed to appear in $Head$
+  \item $nn(m(e, t), [v_1,..., v_n]) \leftarrow Body$ to introduce
+    multiple neural atoms
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example: MNIST}
+  \begin{itemize}
+  \item $\Pi_{digit}$, with $d_1$ and $d_2$ representing two images
+  \item $M_{digit}$ classifies images as $0,...,9$
+  \item addition of two digit images is the sum of their values
+  \end{itemize}
+\begin{verbatim}
+img(d1).
+img(d2).
+nn(digit(1, X), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) :- img(X).
+addition(A, B, N) :- digit1(A) = N1, digit1(B) = N2, N = N1 + N2.
+\end{verbatim}
+  \begin{itemize}
+  \item addition is applied after digits are recognized
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semantics}
+  \begin{itemize}
+  \item turn neural ASP program $\Pi$ into ASP program $\Pi'$ by
+    replacing each neural atom with the set of rules:
+    \begin{itemize}
+    \item $\{m_i(t) = v_1;...; m_i(t) = v_n\} = 1$ for $i \in
+      \{1,...,e\}$
+    \item this is a CHOSE rule: include {\em exactly} 1 of the atoms
+      in a stable model
+    \end{itemize}
+  \item stable models of $\Pi$ are (defined as) the stable models of
+    $\Pi'$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Probability of stable models}
+  \begin{itemize}
+  \item the probability of each atom $m_i(t) = v_j$ is defined as
+    $M(D(t))[i, j]$: $P_\Pi(m_i(t) = v_j) = M(D(t))[i, j]$
+    \begin{itemize}
+    \item $D$: mapping between $t$ (a name) and $\mathbf{t}$ (a tensor)
+    \end{itemize}
+  \item example MNIST: the probability of $digit_1(d) = k$ is
+    $M_{digit}(D(d))[1, k+1]$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Probability of stable models}
+  Given an interpretation $I$, $I|\sigma_{nn}$ is the projection of
+  $I$ onto $\sigma_{nn}$. By $\text{Num}(I|\sigma_{nn}, \Pi)$, we
+  denote the number of stable models of $\Pi$ that agree with
+  $I|\sigma_{nn}$ on $\sigma_{nn}$.
+
+  The probability of a stable model $I$ of $\Pi$ is defined as the
+  product of the probability of each atom $c = v$ in $I|\sigma_{nn}$,
+  divided by the number of stable models of $\Pi$ that agree with
+  $I|\sigma_{nn}$ on $\sigma_{nn}$. That is, for any interpretation
+  $I$,
+\[
+  P_\Pi(I) =
+  \begin{cases}
+    \prod_{c=v \in I|\sigma_{nn}} P_\Pi(c=v) / \text{Num}(I|\sigma_{nn}, \Pi) & \text{if } I \text{ is a stable model of } \Pi; \\
+    0 & \text{otherwise.}
+  \end{cases}
+\]
+\end{frame}
+
+\begin{frame}{Probability of Observations}
+An observation is a set of ASP constraints (i.e., rules of the form $\bot \leftarrow \text{Body}$). The probability of an observation $O$ is defined as
+\[
+P_\Pi(O) = \sum_{I \models O} P_\Pi(I)
+\]
+where $(I \models O)$ denotes that $I$ satisfies $O$.
+
+The probability of the set $O = \{O_1, \ldots, O_o\}$ of observations is defined as the product of the probability of each $O_i$:
+\[
+P_\Pi(O) = \prod_{O_i \in O} P_\Pi(O_i).
+\]
+\end{frame}
+
+\begin{frame}{Example Continued: Modification of $\Pi'$}
+The ASP program $\Pi'$, which is the ASP counterpart of
+$\Pi_{\text{digit}}$, is obtained by:
+\[
+\{ \text{digit1}(d1) = 0; \ldots; \text{digit1}(d1) = 9 \} = 1.
+\]
+\[
+\{ \text{digit1}(d2) = 0; \ldots; \text{digit1}(d2) = 9 \} = 1.
+\]
+
+The stable models of $\Pi_{\text{digit}}$, i.e., the stable models of
+$\Pi'_{\text{digit}}$, include:
+\begin{itemize}
+    \item $I_1 = \{\text{digit1}(d1) = 0, \text{digit1}(d2) = 0, \text{addition}(d1, d2, 0), \ldots \}$,
+    \item $I_2 = \{\text{digit1}(d1) = 0, \text{digit1}(d2) = 1, \text{addition}(d1, d2, 1), \ldots \}$,
+    \item \ldots,
+    \item $I_{100} = \{\text{digit1}(d1) = 9, \text{digit1}(d2) = 9, \text{addition}(d1, d2, 18), \ldots \}$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Probabilities of Stable Models}
+The probabilities of the stable models are calculated as follows:
+\begin{itemize}
+    \item $P_{\Pi}(I_1) = M_{\text{digit}}(D(d1))[1, 1] \times M_{\text{digit}}(D(d2))[1, 1]$,
+    \item \ldots,
+    \item $P_{\Pi}(I_{100}) = M_{\text{digit}}(D(d1))[1, 10] \times M_{\text{digit}}(D(d2))[1, 10]$.
+\end{itemize}
+
+The probability of observation $O = \{\leftarrow \neg \text{addition}(d1, d2, 1)\}$ is given by:
+\[
+P_{\Pi}(O) = P_{\Pi}(I_2) + P_{\Pi}(I_3).
+\]
+\end{frame}
+
+\begin{frame}{Implementation of NeurASP}
+NeurASP implemented by integrating PyTorch with CLINGO:
+\begin{itemize}
+    \item \textbf{PyTorch} handles neural network processes including:
+    \begin{itemize}
+        \item Data loading,
+        \item Mapping pointer terms in neural atoms to input tensors.
+    \end{itemize}
+    \item \textbf{CLINGO} is utilized to:
+    \begin{itemize}
+        \item Compute the probability of stable models,
+        \item Perform post-processing operations in PyTorch.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Examples}
+  \begin{itemize}
+  \item visual reasoning
+  \item Sudoku
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Elaboration tolerance}
+  A formalism is elaboration tolerant to the extent that it is conve-
+  nient to modify a set of facts expressed in the formalism to take
+  into account new phenomena or changed circumstances.
+  \begin{itemize}
+  \item additive elaboration: add new formula
+    \begin{itemize}
+    \item requires non-monotonic reasoning
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
