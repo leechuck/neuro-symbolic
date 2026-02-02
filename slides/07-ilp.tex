@@ -1,0 +1,816 @@
+\documentclass{beamer}
+\usepackage{chessboard}
+\usepackage{centernot}
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary {arrows.meta,bending,positioning}
+
+% \usepackage{pstricks}
+\setbeamertemplate{navigation symbols}{}
+\usepackage{pifont}
+\newcommand{\itarrow}{{\Pisymbol{pzd}{229}}}
+\newcommand{\OK}{\mbox{\textcolor{green}{\Pisymbol{pzd}{52}}}}
+\newcommand{\KO}{\mbox{\textcolor{red}{\Pisymbol{pzd}{56}}}}
+
+%\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,escapechar=?]
+
+% - syntax ---------------------------------------------------------------------
+\newcommand{\naf}[1]{\ensuremath{{\sim\!\!{#1}}}}
+
+\newcommand{\head}[1]{\ensuremath{\mathit{head}(#1)}}
+\newcommand{\body}[1]{\ensuremath{\mathit{body}(#1)}}
+
+\newcommand{\atom}[1]{\ensuremath{\mathit{atom}(#1)}}
+
+\newcommand{\poslits}[1]{\ensuremath{{#1}^+}}
+\newcommand{\neglits}[1]{\ensuremath{{#1}^-}}
+
+\newcommand{\pbody}[1]{\poslits{\body{#1}}}
+\newcommand{\nbody}[1]{\neglits{\body{#1}}}
+
+\newcommand{\PRG}{\ensuremath{P}}
+
+\newcommand{\atbody}[2]{\ensuremath{\mathit{body}_{#1}(#2)}}
+
+\newcommand{\ground}[1]{\ensuremath{\mathit{ground}(#1)}}
+\newcommand{\cground}[2]{\ensuremath{\mathit{ground}_{#2}(#1)}}
+
+% - semantics ------------------------------------------------------------------
+\newcommand{\SM}[1]{\ensuremath{\mathit{SM}(#1)}}
+
+% - operators ------------------------------------------------------------------
+\newcommand{\Cn}[1]{\ensuremath{\mathit{Cn}(#1)}}
+\newcommand{\reduct}[2]{\ensuremath{#1^{#2}}}
+
+\newcommand{\To}[1]{\ensuremath{T_{#1}}}
+\newcommand{\T}[2]{\To{#1}#2}
+\newcommand{\TiO}[2]{\To{#2}^{#1}}
+\newcommand{\Ti}[3]{\TiO{#1}{#2}#3}
+
+\newcommand{\BF}[1]{\ensuremath{\mathit{BF}(#1)}}
+\newcommand{\CF}[1]{\ensuremath{\mathit{CF}(#1)}}
+\newcommand{\CFIF}[1]{\ensuremath{\overleftarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFFI}[1]{\ensuremath{\overrightarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFX}[1]{\ensuremath{\mathit{CF}^x(#1)}}
+
+\newcommand{\loops}[1]{\ensuremath{\mathit{loop}(#1)}}
+\newcommand{\ES}[2]{\ensuremath{\mathit{ES}_{\!#2}(#1)}}
+\newcommand{\EB}[2]{\ensuremath{\mathit{EB}_{\!#2}(#1)}}
+\newcommand{\LFM}[2]{\ensuremath{\mathit{LF}_{\!#2}(#1)}}
+\newcommand{\LF}[1]{\ensuremath{\mathit{LF}(#1)}}
+
+% - tableaux -------------------------------------------------------------------
+\newcommand{\true}{\ensuremath{\mathbf{T}}}
+\newcommand{\false}{\ensuremath{\mathbf{F}}}
+
+\newcommand{\Tsigned}[1]{\ensuremath{\true{#1}}}
+\newcommand{\Fsigned}[1]{\ensuremath{\false{#1}}}
+
+\newcommand{\TOP}[1]{\ensuremath{D_{#1}}}
+\newcommand{\COP}[1]{\ensuremath{D^*_{#1}}}
+
+\newcommand{\Proviso}[1]{\raisebox{-7pt}[0pt][0pt]{\ensuremath{(#1)}}}
+
+\newcommand{\plit}[1]{\ensuremath{\mathbf{t}{#1}}}
+\newcommand{\nlit}[1]{\ensuremath{\mathbf{f}{#1}}}
+
+% - nogoods, assigmemts, etc. --------------------------------------------------
+\newcommand{\domain}[1]{\ensuremath{\mathit{dom}(#1)}}
+
+\newcommand{\ass}{\ensuremath{A}}
+
+\newcommand{\tlits}[1]{\ensuremath{{#1}^{\true}}}
+\newcommand{\flits}[1]{\ensuremath{{#1}^{\false}}}
+\newcommand{\prefix}[2]{\ensuremath{#1[#2]}}
+
+% ADDED to solving (for time being; not used in BOOK!)
+% \newcommand{\clno}[1]{\ensuremath{\delta(#1)}}
+% \newcommand{\ClNo}[1]{\ensuremath{\Delta(#1)}}
+% \newcommand{\nocl}[1]{\ensuremath{\gamma(#1)}}
+% \newcommand{\NoCl}[1]{\ensuremath{\Gamma(#1)}}
+
+\newcommand{\CN}[1]{\ensuremath{\Delta_{#1}}}
+\newcommand{\LN}[1]{\ensuremath{\Lambda_{#1}}}
+
+\newcommand{\dl}[0]{\ensuremath{\mathit{dl}}}
+\newcommand{\dlevel}[1]{\ensuremath{\mathit{dlevel}(#1)}}
+\newcommand{\opp}[1]{\ensuremath{\overline{#1}}}
+
+%\newcommand{\undef}[0]{\ensuremath{\circ}}
+\newcommand{\trdef}[0]{\ensuremath{\times}}
+\newcommand{\scc}[1]{\ensuremath{\mathit{scc}(#1)}}
+\newcommand{\source}[1]{\ensuremath{\mathit{source}(#1)}}
+
+% - modules ----------------------------------------
+\newcommand{\module}[1]{\ensuremath{\mathbb{#1}}}
+\newcommand{\prog}[1]{\ensuremath{P(#1)}}
+\newcommand{\inp}[1]{\ensuremath{I(#1)}}
+\newcommand{\out}[1]{\ensuremath{O(#1)}}
+\newcommand{\inst}[2]{\ensuremath{#1(#2)}}
+\newcommand{\exts}{\epsilon}
+
+% % - incremental solving ----------------------------------------
+% \newcommand{\grounder}{\textsc{Ground}}
+% \newcommand{\addProgram}{\textsc{Add}}
+% \newcommand{\solver}{\textsc{Solve}}
+% \newcommand{\isolve}{\textsc{iSolve}}
+
+% - algorithm2e ----------------------------------------------------------------
+%\DontPrintSemicolon
+
+% \SetKw{ForSome}{for some}
+% \SetKw{SuchThat}{such that}
+
+% \SetKwInOut{Input}{Input}
+% \SetKwInOut{Output}{Output}
+% \SetKwInOut{Global}{Global}
+% \SetKwInOut{Internal}{Internal}
+
+% \SetKwFor{Let}{let}{in}{tel}
+% \SetKwFor{Loop}{loop}{}{}
+
+% \SetFuncSty{sc}
+% \SetKwFunction{Select}{Select}
+% \SetKwFunction{UnFoundedSet}{Unfounded\-Set}
+% \SetKwFunction{Propagation}{Nogood\-Propagation}
+% \SetKwFunction{ConflictAnalysis}{Conflict\-Analysis}
+
+% \SetKwData{Grounder}{Grounder}
+% \SetKwData{Solver}{Solver}
+
+% \SetCommentSty{it}
+% \SetKwComment{AlgoComm}{// }{}
+
+% - systems ----------------------------------------------------------------------
+% >>> NOT USED in BOOK <<<
+\newcommand{\sysfont}{\textit}
+\newcommand{\acthex}{\sysfont{acthex}}
+\newcommand{\adsolver}{\sysfont{adsolver}}
+\newcommand{\asparagus}{\sysfont{asparagus}}
+\newcommand{\aspartame}{\sysfont{aspartame}}
+\newcommand{\aspic}{\sysfont{aspic}}
+\newcommand{\aspmt}{\sysfont{aspmt}}
+\newcommand{\asprin}{\sysfont{asprin}}
+\newcommand{\assat}{\sysfont{assat}}
+\newcommand{\berkmin}{\sysfont{berkmin}}
+\newcommand{\claspD}{\sysfont{claspD}}
+\newcommand{\claspar}{\sysfont{claspar}}
+\newcommand{\claspfolio}{\sysfont{claspfolio}}
+\newcommand{\clasp}{\sysfont{clasp}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\cmodels}{\sysfont{cmodels}}
+\newcommand{\coala}{\sysfont{coala}}
+\newcommand{\dingo}{\sysfont{dingo}}
+\newcommand{\dlvhex}{\sysfont{dlvhex}}
+\newcommand{\dlv}{\sysfont{dlv}}
+\newcommand{\ezcsp}{\sysfont{ezcsp}}
+\newcommand{\ftolp}{\sysfont{f2lp}}
+\newcommand{\gasp}{\sysfont{gasp}}
+\newcommand{\gecode}{\sysfont{gecode}}
+\newcommand{\gidl}{\sysfont{gidl}}
+\newcommand{\gnt}{\sysfont{gnt}}
+\newcommand{\gringo}{\sysfont{gringo}}
+\newcommand{\iclingo}{\sysfont{iclingo}}
+\newcommand{\idp}{\sysfont{idp}}
+\newcommand{\inca}{\sysfont{inca}}
+\newcommand{\jdlv}{\sysfont{jdlv}}
+\newcommand{\lctocasp}{\sysfont{lc2casp}}
+\newcommand{\lparse}{\sysfont{lparse}}
+\newcommand{\lptodiff}{\sysfont{lp2diff}}
+\newcommand{\lptosat}{\sysfont{lp2sat}}
+\newcommand{\mchaff}{\sysfont{mchaff}}
+\newcommand{\metasp}{\sysfont{metasp}}
+\newcommand{\mingo}{\sysfont{mingo}}
+\newcommand{\minisat}{\sysfont{minisat}}
+\newcommand{\nomorepp}{\sysfont{nomore++}}
+\newcommand{\oclingo}{\sysfont{oclingo}}
+\newcommand{\omiga}{\sysfont{omiga}}
+\newcommand{\piclasp}{\sysfont{piclasp}}
+\newcommand{\picosat}{\sysfont{picosat}}
+\newcommand{\plasp}{\sysfont{plasp}}
+\newcommand{\quontroller}{\sysfont{quontroller}}
+\newcommand{\rosoclingo}{\sysfont{rosoclingo}}
+\newcommand{\sag}{\sysfont{sag}}
+\newcommand{\satz}{\sysfont{satz}}
+\newcommand{\siege}{\sysfont{siege}}
+\newcommand{\smodelscc}{\sysfont{smodels$_{\!cc}$}}
+\newcommand{\smodelsr}{\sysfont{smodels}$_r$}
+\newcommand{\smodels}{\sysfont{smodels}}
+\newcommand{\sugar}{\sysfont{sugar}}
+\newcommand{\unclasp}{\sysfont{unclasp}}
+\newcommand{\wasp}{\sysfont{wasp}}
+\newcommand{\zchaff}{\sysfont{zchaff}}
+\newcommand{\zzz}{\sysfont{z3}}
+
+\newcommand{\aspif}{\sysfont{aspif}}
+
+\newcommand{\python}{Python}
+\newcommand{\lua}{Lua}
+\newcommand{\cpp}{C++}
+\newcommand{\java}{Java}
+
+% - latex ----------------------------------------------------------------------
+\newcounter{excounter}
+\newcommand{\labex}[1]{\refstepcounter{excounter}\label{#1}} % \index{\ensuremath{\PRG_{\ref{#1}}}}
+
+\newcommand{\myul}[2][blue]{\sethlcolor{#1}\hl{#2}\setulcolor{black}}
+
+\newcommand<>{\cunderline}[3]{\only<#1>{#3}\only<#2>{\underline{#3}}}
+\newcommand<>{\cem}[3]{\only<#1>{#3}\only<#2>{\ul{#3}}}
+\newcommand<>{\cgray}[3]{\only<#1>{#3}\only<#2>{\textcolor{gray}{#3}}}
+\newcommand<>{\colorize}[4]{\only<#1>{#4}\only<#2>{\textcolor{#3}{#4}}}
+
+\setbeamertemplate{navigation symbols}{}
+
+\renewcommand{\em}{\itshape}
+
+\mode<presentation>
+{
+  \usecolortheme{crane}
+  \usetheme{Frankfurt}
+}
+% \mode<presentation>
+% {
+%   \usecolortheme{dove}
+% }
+
+% \mode<presentation>
+% {
+% \useinnertheme[shadow=true]{rounded}
+% \useoutertheme{infolines}
+% \usecolortheme{dove}
+% \setbeamerfont{block title}{size={}}
+% }
+
+\title[Nesy]{Inductive Logic Programming}
+
+\author{Robert Hoehndorf}
+
+\date{Neurosymbolic AI}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Introduction to Inductive Learning}
+\begin{frame}{Introduction to Inductive Learning}
+  \begin{itemize}
+    \item Pure inductive learning focuses on finding a hypothesis that aligns with observed examples.
+    \item Specialized to logical sentences as hypothesis representations.
+    \item Examples and classifications are also represented as logical sentences.
+    \item New examples are classified by deducing a classification sentence from the hypothesis and example description.
+  \end{itemize}
+\end{frame}
+
+\section{Logical Formulation of Learning}
+\begin{frame}{Logical Formulation of Learning}
+  \begin{itemize}
+    \item Allows for incremental construction of hypotheses.
+    \item Incorporates prior knowledge to assist in classifying new examples.
+    \item Clarifies many issues in learning by using logical inference.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Examples and Hypotheses}
+  \frametitle{Logical Representation of Examples}
+  \begin{itemize}
+    \item In a logical setting, attributes of examples are represented as unary predicates.
+    \item Example descriptions are formulated as logical sentences.
+    \item Notation: \( D_i(X_i) \) represents the description of the
+      \( i \)-th example, \( X_i \), where \( D_i \) is any logical
+      expression involving \( X_i \).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Detailed Example Description}
+  \frametitle{Example Formulation}
+  \begin{itemize}
+    \item Consider an example where the attributes are Alternate, Bar,
+      Fri/Sat, etc.
+    \item For the first example \( X_1 \), the description could be:
+      \[ \text{Alternate}(X_1) \land \neg \text{Bar}(X_1) \land \neg \text{Fri/Sat}(X_1) \land \text{Hungry}(X_1) \land \dots \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Classification Using Logical Sentences}
+  \frametitle{Example Classification}
+  \begin{itemize}
+    \item The classification of each example is given by a literal using a goal predicate.
+    \item For instance, whether to wait for a table (\( \text{WillWait} \)) is determined by:
+      \[ \text{WillWait}(X_1) \text{ or } \neg \text{WillWait}(X_1) \]
+    \item This representation helps in deciding based on the given attributes whether to perform an action (e.g., waiting for a table).
+  \end{itemize}
+\end{frame}
+
+\section{Inductive Learning Objectives}
+\begin{frame}{Inductive Learning Objectives}
+  \begin{itemize}
+    \item Goal: Find hypotheses that classify examples well and generalize to new examples.
+    \item Hypotheses form: \( \forall x \, \text{Goal}(x) \Leftrightarrow C_j(x) \).
+    \item Decision trees as logical expressions.
+    \item Extension of a predicate: Set of examples satisfying the hypothesis.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Hypothesis Space \( H \)}
+  \frametitle{Definition of Hypothesis Space}
+  \begin{itemize}
+    \item The hypothesis space \( H \) comprises all hypotheses \(
+      \{h_1, h_2, \ldots, h_n\} \) considered by the learning
+      algorithm.
+    \item Example: In a decision tree learning algorithm, \( H \)
+      includes all possible decision trees defined by the given
+      attributes.
+    \item The algorithm operates under the assumption that one of
+      these hypotheses, \( h_1 \lor h_2 \lor \ldots \lor h_n \),
+      correctly describes the target function.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Consistency of Hypotheses}
+  \frametitle{Evaluating Consistency}
+  \begin{itemize}
+    \item A hypothesis \( h_j \) is consistent if it agrees with all
+      examples in the training set.
+    \item Inconsistency occurs if \( h_j \) does not match the reality
+      of one or more examples.
+    \item Two forms of inconsistency:
+      \begin{enumerate}
+        \item False negative: \( h_j \) incorrectly predicts a negative outcome when the example is positive.
+        \item False positive: \( h_j \) incorrectly predicts a positive outcome when the example is negative.
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Logical Inconsistencies}
+  \frametitle{Handling Inconsistencies in Learning}
+  \begin{itemize}
+    \item False positives and false negatives indicate logical inconsistencies between a hypothesis and an example.
+    \item If an example is a correct observation, any hypothesis conflicting with it can be eliminated.
+    \item This process is analogous to the resolution rule in logic, where contradictions lead to the removal of inconsistent clauses.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Logical Inference in Learning}
+  \frametitle{Example of Logical Inference}
+  \begin{itemize}
+    \item Consider an example denoted by \( I_1 \), and a hypothesis space \( h_1 \lor h_2 \lor h_3 \lor h_4 \).
+    \item If \( I_1 \) is inconsistent with \( h_2 \) and \( h_3 \), we can logically infer the revised hypothesis space \( h_1 \lor h_4 \).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Inductive Learning Process}
+  \frametitle{Characterization of Inductive Learning}
+  \begin{itemize}
+    \item Inductive learning in a logical setting involves gradually
+      eliminating inconsistent hypotheses.
+    \item The goal is to narrow down the hypothesis space to those
+      that consistently explain all observed examples.
+    \item Caution against using resolution-based theorem proving due
+      to the vast (or infinite) size of hypothesis spaces.
+    \item Instead of enumerating all possibilities, focus on more
+      efficient strategies to find logically consistent hypotheses.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Introduction to Current-Best-Hypothesis Search}
+  \frametitle{Current-Best-Hypothesis Search}
+  \begin{itemize}
+    \item Concept introduced by John Stuart Mill (1843).
+    \item Focuses on maintaining and adjusting a single hypothesis as
+      new data arrives.
+    \item Aim: Keep the hypothesis consistent with incoming examples.
+    \item If new examples are consistent with the hypothesis \( h_r \), no adjustment is needed.
+    \item A false negative example requires expanding the hypothesis' extension to include the example.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Generalization and Specialization}
+  \includegraphics[width=\textwidth]{besth.png}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Generalization and Specialization}
+  \includegraphics[width=\textwidth]{cbestl.png}
+\end{frame}
+
+\begin{frame}{Current-Best-Hypothesis and Its Limitations}
+  \frametitle{Understanding Backtracking}
+  \begin{itemize}
+    \item The current-best-hypothesis approach selects a single
+      hypothesis as the best guess without sufficient data.
+    \item This may lead to backtracking when new data contradicts this
+      hypothesis.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Version Space Approach}
+  \frametitle{Alternative Strategy: Version Space}
+  \begin{itemize}
+    \item Instead of one hypothesis, maintain all hypotheses
+      consistent with all observed data so far.
+    \item Each new example either supports the existing hypotheses or
+      eliminates inconsistent ones.
+    \item This method minimizes the need for backtracking by adjusting
+      the hypothesis space dynamically.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Candidate Elimination in Version Space}
+  \frametitle{Dynamic Hypothesis Adjustment}
+  \begin{itemize}
+    \item Initial hypothesis space: \( h_1 \lor h_2 \lor h_3 \lor
+      \ldots \lor h_n \).
+    \item As data arrives, inconsistent hypotheses are removed,
+      shrinking the disjunctive sentence.
+    \item The remaining set of hypotheses, which is consistent with
+      all examples, is the {\em version space}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Version Space Learning Algorithm}
+  \frametitle{Candidate Elimination Algorithm}
+  \begin{itemize}
+    \item The version space learning algorithm ensures that the
+      reduced hypothesis space still contains the correct answer.
+    \item Assumes that the correct hypothesis exists within the original set.
+    \item Continually refines the set of viable hypotheses as more data becomes available.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Version space learning}
+  \includegraphics[width=\textwidth]{versionspace.png}
+\end{frame}
+
+\begin{frame}{The Challenge of Enormous Hypothesis Spaces}
+  \frametitle{Representing Large Hypothesis Spaces}
+  \begin{itemize}
+    \item Hypothesis spaces can be vast, often as expansive as the set of all real numbers between two points.
+    \item Similar to representing an infinite set of numbers with an interval, we use boundaries to represent hypothesis spaces.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ordering in Hypothesis Spaces}
+  \frametitle{Generalization and Specialization}
+  \begin{itemize}
+    \item Hypothesis spaces have an ordering based on generalization and specialization.
+    \item This partial ordering allows us to define boundaries not as points but as sets of hypotheses.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Boundary Sets in Version Space}
+  \frametitle{Using G-set and S-set}
+  \begin{itemize}
+    \item Entire version space can be efficiently represented using two boundary sets:
+      \begin{itemize}
+        \item Most General Boundary (G-set)
+        \item Most Specific Boundary (S-set)
+      \end{itemize}
+    \item These sets include all hypotheses consistent with the observed examples.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Properties of Boundary Sets}
+  \frametitle{Characteristics of G-set and S-set}
+  \begin{itemize}
+    \item \textbf{S-set}: Contains the most specific hypotheses that are consistent with all examples.
+    \item \textbf{G-set}: Contains the most general hypotheses that are consistent with all examples.
+    \item No hypothesis outside these sets is consistent with all the examples so far.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Version space learning}
+  \includegraphics[width=\textwidth]{versions.png}
+\end{frame}
+
+\begin{frame}{Defining the Initial Version Space}
+  \frametitle{Setup of Version Space}
+  \begin{itemize}
+    \item Initial version space includes all possible hypotheses.
+    \item \textbf{G-set} initialized to contain \textit{True}:
+      Represents the hypothesis that includes everything.
+    \item \textbf{S-set} initialized to contain \textit{False}:
+      Represents the hypothesis with an empty extension.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Properties Ensuring Sufficient Representation}
+  \frametitle{Key Properties of Version Space}
+  \begin{enumerate}
+  \item \textbf{No Stragglers}: Every consistent hypothesis must be
+    more specific than at least one member of the G-set and more
+    general than at least one member of the S-set. This ensures all
+    hypotheses fit within the established boundaries.
+  \item \textbf{No Holes}: Any hypothesis that is more specific than a
+    member of the G-set and more general than a member of the S-set
+    must be consistent, filling any potential gaps in the hypothesis
+    space.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Consistency and Gap Analysis}
+  \frametitle{Consistency within Boundaries}
+  \begin{itemize}
+  \item A hypothesis \( h \) situated between the S and G sets agrees
+    with all examples:
+      \begin{itemize}
+      \item It rejects all negative examples rejected by any G-set
+        member (due to being more specific).
+      \item It accepts all positive examples accepted by any S-set
+        member (due to being more general).
+      \end{itemize}
+    \item Thus, \( h \) must be consistent, fitting within the version
+      space without leaving gaps.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Entailment Constraint in Inductive Learning}
+  \frametitle{Understanding Logical Relationships}
+  \begin{block}{Entailment Constraint}
+    Given a set of descriptions and classifications from a training set:
+    \begin{itemize}
+      \item Let \textbf{Descriptions} be the conjunction of all
+        example descriptions. 
+      \item Let \textbf{Classifications} be the conjunction of all
+        example classifications.
+    \end{itemize}
+    A hypothesis \( H \) that explains the observations must satisfy:
+    \[ H \land \text{Descriptions} \models \text{Classifications} \]
+  \end{block}
+  \begin{itemize}
+    \item This relationship is known as an \textbf{entailment constraint}.
+    \item Hypothesis \( H \) must logically entail the Classifications
+      when combined with the Descriptions.
+    \item prefer smaller, consistent hypotheses over complex ones
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Introducing Relevance-Based Learning}
+  \frametitle{Formulation of Relevance-Based Learning}
+  \begin{block}{Entailment Constraints in RBL}
+    \begin{itemize}
+      \item Traditional constraint for a hypothesis explaining observations:
+      \[ \text{Hypothesis} \land \text{Descriptions} \models \text{Classifications} \]
+      \item Relevance-based learning adds a second entailment:
+      \[ \text{Background} \land \text{Descriptions} \land \text{Classifications} \models \text{Hypothesis} \]
+    \end{itemize}
+  \end{block}
+  \begin{itemize}
+    \item This approach not only ensures that the hypothesis explains
+      the classifications given the descriptions, but also that it is
+      derivable from the background knowledge combined with
+      descriptions and classifications.
+    \item RBL aims to find hypotheses that are both explanatory and
+      grounded in established knowledge.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{KBIL and Inductive Logic Programming}
+  \frametitle{Entailment in KBIL}
+  \begin{block}{Generalized Entailment Constraint for KBIL}
+    \begin{itemize}
+      \item Incorporating both background knowledge and new hypotheses:
+      \[ \text{Background} \land \text{Hypothesis} \land
+        \text{Descriptions} \models \text{Classifications} \]
+    \end{itemize}
+  \end{block}
+  \begin{itemize}
+    \item This constraint ensures that both the background knowledge
+      and the proposed hypothesis together explain the classifications
+      of examples.
+    \item The goal is to develop hypotheses that are as simple as
+      possible while still being consistent with this enriched
+      entailment constraint.
+    \item Algorithms that adhere to this model are known as
+      knowledge-based inductive learning (KBIL) algorithms.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The General KBIL Problem}
+  \frametitle{Solving the Entailment Constraint}
+  \begin{block}{Entailment Constraint for KBIL}
+    Given the following:
+    \begin{itemize}
+      \item \textbf{Background}: Existing knowledge of family relations.
+      \item \textbf{Descriptions}: Descriptions of family members (e.g., Mother, Father, Married relations).
+      \item \textbf{Classifications}: Target concepts to learn (e.g., Grandparent, BrotherInLaw).
+    \end{itemize}
+    Solve for \textbf{Hypothesis}:
+    \[ \text{Background} \land \text{Hypothesis} \land \text{Descriptions} \models \text{Classifications} \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Example of Family Relationship Learning}
+  \frametitle{Family Tree as Descriptions}
+  \begin{itemize}
+    \item Family members described by relationships and properties:
+      \begin{itemize}
+        \item \texttt{Father(Philip, Charles), Father(Philip, Anne)}
+        \item \texttt{Mother(Mum, Margaret), Mother(Mum, Elizabeth)}
+        \item \texttt{Married(Diana, Charles), Married(Elizabeth, Philip)}
+        \item \texttt{Male(Philip), Female(Margaret)}
+        \item And more...
+      \end{itemize}
+    \item These descriptions form the basis for generating hypotheses about relationships.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Learning Specific Family Relations}
+  \frametitle{Classifications in Family Learning}
+  \begin{itemize}
+    \item Example target concept: \textbf{Grandparent}
+    \item Example classifications:
+      \begin{itemize}
+        \item \texttt{Grandparent(Mum, Charles), Grandparent(Elizabeth, Beatrice)}
+        \item \texttt{$\neg$Grandparent(Mum, Harry), $\neg$Grandparent(Spencer, Peter)}
+      \end{itemize}
+    \item With 20 family members, potential classifications could number 400 different conjuncts.
+    \item Learning can be achieved even with a subset of the complete set of classifications.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Formulating the Hypothesis for Grandparent}
+  \frametitle{Complex Definition of Grandparent}
+  \begin{block}{Initial Complex Hypothesis}
+    The relationship of being a grandparent, \( \text{Grandparent}(x, y) \), is defined as follows:
+    \[
+    \text{Grandparent}(x, y) \Leftrightarrow 
+    \left(
+    \begin{array}{c}
+      \exists z \, \text{Mother}(x, z) \land \text{Mother}(z, y) \lor \\
+      \exists z \, \text{Mother}(x, z) \land \text{Father}(z, y) \lor \\
+      \exists z \, \text{Father}(x, z) \land \text{Mother}(z, y) \lor \\
+      \exists z \, \text{Father}(x, z) \land \text{Father}(z, y)
+    \end{array}
+    \right)
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Simplifying the Hypothesis with Background Knowledge}
+  \frametitle{Simplified Definition of Grandparent}
+  \begin{block}{Using Background Knowledge}
+    If background knowledge includes:
+    \[ \text{Parent}(x, y) \Leftrightarrow [\text{Mother}(x, y) \lor \text{Father}(x, y)], \]
+    then the definition of Grandparent simplifies to:
+    \[ \text{Grandparent}(x, y) \Leftrightarrow [\exists z \, \text{Parent}(x, z) \land \text{Parent}(z, y)]. \]
+  \end{block}
+  \begin{itemize}
+    \item This simplification helps in reducing the complexity of the hypothesis.
+    \item It utilizes a more general concept of \textit{Parent} to encapsulate both \textit{Mother} and \textit{Father}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Enhancing ILP with Constructive Induction}
+  \frametitle{Introduction to Constructive Induction}
+  \begin{itemize}
+    \item Constructive induction allows ILP algorithms to create new predicates.
+    \item This capability enhances the expression and simplification of hypotheses.
+    \item For simplifying target predicate definitions, the ILP may
+      propose a new predicate, such as ``Parent''.
+    \item This predicate integrates and simplifies multiple existing relationships.
+    \item Constructive induction is essential for cumulative learning--allowing systems to build increasingly complex models.
+    \item One of the toughest challenges in machine learning!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Learning Grandfather Predicate}
+  \frametitle{Using Positive and Negative Examples}
+  \begin{itemize}
+    \item Positive examples: (George, Anne), (Philip, Peter), (Spencer, Harry), etc.
+    \item Negative examples: (George, Elizabeth), (Harry, Zara), (Charles, Philip), etc.
+%    \item Total examples: 12 positive and 388 negative in the family tree.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Initial Clause Formulation by FOIL}
+  \frametitle{Formulating the Initial Clause}
+  \begin{itemize}
+    \item FOIL algorithm start: most general clause
+      \[ \Rightarrow \text{Grandfather}(x, y) \]
+    \item This clause classifies all examples as positive, needs specialization.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Specializing the Clause}
+  \frametitle{Clause Specialization Process}
+  \begin{itemize}
+    \item Potential additions to specialize the clause:
+      \begin{itemize}
+        \item \texttt{Father(x, y) $\Rightarrow$ Grandfather(x, y)}
+        \item \texttt{Parent(x, z) $\Rightarrow$ Grandfather(x, y)}
+        \item \texttt{Father(x, z) $\Rightarrow$ Grandfather(x, y)}
+      \end{itemize}
+    \item The first addition is incorrect on all positives
+    \item The third addition should be preferred as it correctly
+      classifies all positive examples and fewer negatives.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Specializing the Grandfather Clause}
+  \frametitle{Refining the Hypothesis}
+  \begin{block}{Adding Necessary Conditions}
+    To accurately classify all examples, we add:
+    \[ \text{Father}(x, z) \land \text{Parent}(z, y) \Rightarrow \text{Grandfather}(x, y) \]
+  \end{block}
+  \begin{itemize}
+%    \item This addition specializes the clause to exclude cases where \(x\) is the father of \(z\) but \(z\) is not a parent of \(y\).
+    \item The clause now correctly classifies all positive and negative examples.
+  \end{itemize}
+  \begin{block}{Alternative Without Parent Predicate}
+    Without the Parent predicate, the solution might be:
+    \begin{itemize}
+      \item \texttt{Father(x, z) \(\land\) Father(z, y) \(\Rightarrow\) Grandfather(x, y)}
+      \item \texttt{Father(x, z) \(\land\) Mother(z, y) \(\Rightarrow\) Grandfather(x, y)}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{FOIL algorithm}
+  \includegraphics[width=\textwidth]{foil.png}
+\end{frame}
+
+
+\begin{frame}{Inverse Resolution: Inverting Deductive Proofs}
+  \frametitle{Inverse Resolution in ILP}
+  \begin{block}{The Principle of Inverse Resolution}
+    Inverse resolution operates under the premise that:
+    \[
+    \text{Background} \land \text{Hypothesis} \land \text{Descriptions} \models \text{Classifications}
+    \]
+%    If classifications follow from the background, hypothesis, and descriptions, this should be provable by resolution, given its completeness.
+  \end{block}
+  \begin{itemize}
+    \item ``run the proof backward'' to discover a hypothesis that
+      makes this entailment valid
+    \item Inverse resolution seeks to invert the normal resolution
+      process, finding a hypothesis that aligns with all given
+      classifications
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Resolution}
+  \begin{itemize}
+  \item Given two clauses, infer a new clause: from clause $p \cup C_1$ and
+    clause $\neg p \cup C_2$ infer new clause $C_1 \cup C_2$
+  \item $C_1 \cup C_2$ is called {\em resolvent} of the input clauses
+    with respect to $p$
+  \item FOL: Given two clauses $\{\phi_1\} \cup C_1$ and $\{\neg \phi_2 \} \cup
+    C_2$
+  \item Rename variables to be distinct in the clauses
+  \item For any $\theta$ such that $\phi_1\theta = \phi_2\theta$, we
+    can infer $(C_1 \cup C_2)\theta$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{FOIL algorithm}
+  \includegraphics[width=\textwidth]{invres.png}
+\end{frame}
+
+\begin{frame}{The Role of New Predicates and Functions}
+  \frametitle{Innovations that Transformed Science}
+  \begin{block}{Impact of Conceptual Innovations}
+    Historical innovations in science often stem from the introduction
+    of new predicates and functions:
+    \begin{itemize}
+      \item Galileo's invention of \textit{acceleration}.
+      \item Joule's concept of \textit{thermal energy}.
+    \end{itemize}
+    These concepts enabled the formulation of simpler and more elegant
+    theories, fundamentally changing our understanding of natural
+    phenomena.
+  \end{block}
+  \begin{itemize}
+    \item The challenge lies not just in discovering new laws but in
+      identifying entirely new entities and their relationships to
+      existing ones.
+    \item These new predicates allow for a re-conceptualization of
+      observations.
+  \end{itemize}
+\end{frame}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

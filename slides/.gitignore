@@ -1,0 +1,12 @@
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.dvi
+*~
+# generated pdfs - usually we don't commit them, but check if they are images
+# I'll exclude them for now, but user can force add if needed.
+*.pdf

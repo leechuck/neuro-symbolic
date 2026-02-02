@@ -47,9 +47,9 @@
 \begin{frame}
   \frametitle{Format and Evaluation}
   \begin{itemize}
-  \item seminar-style course
+  \item seminar- or journal club style
     \begin{itemize}
-    \item reading 2-3 research papers per week
+    \item reading 1-2 research papers per week
     \item presentation (20\%) and discussion (20\%)
     \end{itemize}
   \item research project (60\%)
@@ -218,38 +218,38 @@
 
 % Two Families of Techniques
 \begin{frame}
-\frametitle{Two Families of Techniques}
-\begin{itemize}
-\item Learning Methods: Predominantly statistical
-\item Reasoning Methods: Predominantly discrete
-\item General conclusion: Human-level AI requires symbiotic
-  collaboration of data and models
-\end{itemize}
+  \frametitle{Two Families of Techniques}
+  \begin{itemize}
+  \item Learning Methods: Predominantly statistical
+  \item Reasoning Methods: Predominantly discrete
+  \item General conclusion: Human-level AI requires symbiotic
+    collaboration of data and models
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Why symbols?}
-\begin{itemize}
-\item Symbols are physical entities that can encode for our {\em
-    knowledge} of the world (e.g., for a proposition $P$)
-\item We want knowledge to affect our decisions:
+  \frametitle{Why symbols?}
   \begin{itemize}
-  \item do A if world believed to satisfy P
+  \item Symbols are physical entities that can encode for our {\em
+      knowledge} of the world (e.g., for a proposition $P$)
+  \item We want knowledge to affect our decisions:
+    \begin{itemize}
+    \item do A if world believed to satisfy P
+    \end{itemize}
+  \item $P$ may not be {\em explicitly} represented $\Rightarrow$ need
+    symbol manipulation and search
+  \item Example:
+    \begin{itemize}
+    \item Patient $x$ is allergic to medication $m$: $all(x,m)$
+    \item Anybody allergic to $m$ is also allergic to $m'$: $\forall
+      y(all(y,m) \rightarrow all(y,m'))$
+    \item It's not safe to prescribe medication if allergic: $\forall a,
+      b (all(a,b) \rightarrow \neg safe(a,b))$
+    \item Is it safe to prescribe $m'$ to $x$: $safe(x, m')$ ?
+    \end{itemize}
+  \item symbol systems: formal logic, arithmetic, algebra, term/graph
+    rewriting systems, digital computer
   \end{itemize}
-\item $P$ may not be {\em explicitly} represented $\Rightarrow$ need
-  symbol manipulation and search
-\item Example:
-  \begin{itemize}
-  \item Patient $x$ is allergic to medication $m$: $all(x,m)$
-  \item Anybody allergic to $m$ is also allergic to $m'$: $\forall
-    y(all(y,m) \rightarrow all(y,m'))$
-  \item It's not safe to prescribe medication if allergic: $\forall a,
-    b (all(a,b) \rightarrow \neg safe(a,b))$
-  \item Is it safe to prescribe $m'$ to $x$: $safe(x, m')$ ?
-  \end{itemize}
-\item symbol systems: formal logic, arithmetic, algebra, term/graph
-  rewriting systems, digital computer
-\end{itemize}
 \end{frame}
 
 \begin{frame}
