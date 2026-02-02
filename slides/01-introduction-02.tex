@@ -1,12 +1,17 @@
 \documentclass{beamer}
 \usepackage{fancybox}
+\usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,
-                chains,
-                positioning, 
-                shadows.blur, shapes.arrows}
-              
-\usetheme{Madrid}
+  chains,
+  positioning, 
+  shadows.blur, shapes.arrows}
+
+\usetheme{metropolis} % Clean, high data-ink ratio theme
+% \usetheme{Madrid}
+
+% Setting fonts for readability
+%\setsansfont[BoldFont={Fira Sans SemiBold}]{Fira Sans}
 
 \title{Neuro-symbolic AI}
 \author{Robert Hoehndorf}
@@ -16,31 +21,31 @@
 
 \frame{\titlepage}
 
-\begin{frame}
-\frametitle{Organization}
-\begin{itemize}
-\item New room: B9-3222
-\item New time: 14:30-17:30 (or: 2:30pm to 5:30pm)
-\end{itemize}
-\end{frame}
+% \begin{frame}
+% \frametitle{Organization}
+% \begin{itemize}
+% \item New room: B9-3222
+% \item New time: 14:30-17:30 (or: 2:30pm to 5:30pm)
+% \end{itemize}
+% \end{frame}
 
-\begin{frame}
-\frametitle{Organization}
-\begin{itemize}
-\item Starting next week: we {\em all} read and discuss papers
-  \begin{itemize}
-  \item list is online (Zotero Group)
-    \begin{itemize}
-    \item \url{https://www.zotero.org/groups/5368923/cs394y_kaust_neurosymbolic_ai/library}
-    \end{itemize}
-  \item welcome to add your own (just join the group)
-  \item each week: 2-4 papers
-  \item mix of: Foundations + Theory, Applications
-  \item we all read the papers
-  \item 1-2 presenters, overview of the paper, leading discussion
-  \end{itemize}
-\end{itemize}
-\end{frame}
+% \begin{frame}
+% \frametitle{Organization}
+% \begin{itemize}
+% \item Starting next week: we {\em all} read and discuss papers
+%   \begin{itemize}
+%   \item list is online (Zotero Group)
+%     \begin{itemize}
+%     \item \url{https://www.zotero.org/groups/5368923/cs394y_kaust_neurosymbolic_ai/library}
+%     \end{itemize}
+%   \item welcome to add your own (just join the group)
+%   \item each week: 2-4 papers
+%   \item mix of: Foundations + Theory, Applications
+%   \item we all read the papers
+%   \item 1-2 presenters, overview of the paper, leading discussion
+%   \end{itemize}
+% \end{itemize}
+% \end{frame}
 
 
 \begin{frame}
@@ -77,7 +82,8 @@
 \begin{itemize}
 \item Deduction vs. Induction vs Abduction:
   \begin{itemize}
-  \item Classical distinction between reasoning and learning and diagnosis/explanation
+  \item Classical distinction between reasoning and learning and
+    diagnosis/explanation
   \end{itemize}
 \item Compression vs. Decompression:
   \begin{itemize}
@@ -323,6 +329,95 @@
   \item Type of Logic
   \end{itemize}
 \end{frame}
+
+\begin{frame}{AI research is converging on the integration of learning and logical reasoning.}
+    \begin{itemize}
+        \item \textbf{StarAI:} Integrates logic with probabilistic graphical models (e.g., Markov Logic).
+        \item \textbf{NeSy:} Integrates symbolic reasoning with neural networks (e.g., DeepProbLog).
+        \item \textbf{Objective:} Both fields aim to unify high-level logic with robust learning frameworks.
+    \end{itemize}
+    
+\end{frame}
+
+% --- THE CORE (NARROW) ---
+
+%\section{Dimension 1: Directed vs. Undirected}
+
+\begin{frame}{Directed models}
+  \textbf{StarAI: Probabilistic Logic Programs (PLP)}
+  \begin{itemize}
+  \item \textbf{Least Herbrand Model:} A unique minimal set where
+    facts are true only if explicitly stated or derived.
+%        \item \textit{ProbLog Example:} $0.5 :: heads(coin).$ and $win \leftarrow heads(coin)$ implies $P(win) = 0.5$.
+  \end{itemize}
+  \vfill
+  \textbf{NeSy: DeepProbLog}
+  \begin{itemize}
+  \item \textbf{Neural Predicates:} $nn(mnist\_net, Img, Digit) :: digit(Img, Digit)$.
+  \item The logic engine treats neural outputs as probabilistic facts.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Undirected models}
+  \textbf{StarAI: Markov Logic Networks (MLN)}
+  \begin{itemize}
+  \item Uses \textbf{Weighted Model Counting} to find the probability of a world.
+  \item Logic formulas act as templates for ground constraints.
+  \end{itemize}
+  \vfill
+  \textbf{NeSy: Logic Tensor Networks (LTN)}
+  \begin{itemize}
+  \item Maps truth values to $[0,1]$ using \textbf{Fuzzy Logic Relaxation}.
+  \item \textbf{Logic Loss:} Contradictions (e.g., $Cat$ is true but
+    $Animal$ is false) create gradients to update the network.
+  \end{itemize}
+\end{frame}
+
+%\section{Dimension 2 \& 3: Inference and Integration}
+
+\begin{frame}{Regularization vs differentiation}
+  \textbf{Logic as Regularization (e.g., Semantic Loss)}
+  \begin{itemize}
+  \item Logic is a training-time constraint compiled into a scalar loss.
+  \item \textbf{Result:} Logic is "compiled away" into weights; inference is purely neural.
+  \end{itemize}
+  \vfill
+  \textbf{Differentiable Logic (e.g., DeepProbLog)}
+  \begin{itemize}
+  \item Logic is a runtime layer in the computation graph.
+  \item \textbf{Result:} Compositionality is preserved; rules can be changed without retraining.
+  \end{itemize}
+\end{frame}
+
+%\section{Dimensions 4-7: Representation and Expressivity}
+
+\begin{frame}{Symbolic vs sub-symbolic}
+  \begin{itemize}
+  \item \textbf{Symbolic (StarAI):} Uses exact matching (e.g., $p(a, b)$).
+  \item \textbf{Sub-symbolic (NeSy):} Embeds symbols into vector space $\mathbb{R}^d$.
+  \item \textbf{Unification:} Becomes a geometric operation (similarity) rather than a symbolic match.
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{Logic expressivity}
+  \begin{center}
+    \begin{tabular}{l l l}
+      \toprule
+      \textbf{Expressivity} & \textbf{System} & \textbf{Recursion} \\
+      \midrule
+      Propositional & Semantic Loss & None \\
+      Relational & NTPs, DiffLog & Bounded \\
+      Logic Prog. & DeepProbLog & Unbounded/Dynamic \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \begin{block}{Assertion}
+    Higher expressivity increases learning difficulty but allows for
+    complex data structures like lists and trees.
+  \end{block}
+\end{frame}
+
 
 \begin{frame}
   \frametitle{Other dimensions}
