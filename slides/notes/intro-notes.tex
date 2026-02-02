@@ -1,0 +1,433 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{framed}
+
+% Command for Whiteboard Instructions
+\newcommand{\whiteboard}[1]{
+    \begin{framed}
+    \textbf{\textsf{WHITEBOARD PROTOCOL:}} \\
+    #1
+    \end{framed}
+}
+
+\title{Lecture Script: From Statistical Relational to Neural-Symbolic AI}
+\author{Instructor Scriptum}
+\date{Lecture Duration: 50 Minutes}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+\textbf{Script:}
+Today we examine the convergence of two major subfields in Artificial
+Intelligence: Statistical Relational Artificial Intelligence (StarAI)
+and Neural-Symbolic Computation (NeSy). Both fields share a primary
+objective: the integration of learning frameworks with logical
+reasoning.
+
+While StarAI focuses on integrating logic with probabilistic graphical
+models, NeSy focuses on integrating symbolic reasoning with neural
+networks. Despite these different substrates, we can identify
+substantial parallels between them. This lecture organizes these
+parallels along seven distinct dimensions.
+
+\whiteboard{
+  \textbf{Header:} StarAI vs. NeSy \\
+  \textbf{Definitions:}
+  \begin{itemize}
+  \item \textbf{StarAI:} Logic + Probability (e.g., Markov Logic, Problog).
+  \item \textbf{NeSy:} Logic + Neural Networks (e.g., Neural Theorem Provers, LTN).
+  \end{itemize}
+  \textbf{Goal:} Identify 7 Dimensions of isomorphism.
+}
+
+\section*{Dimension 1: Directed vs. Undirected Models }
+
+\textbf{Script:} The first dimension concerns the dependency structure
+of the underlying model. In graphical models, we distinguish between
+directed models (like Bayesian networks) and undirected models (like
+Markov networks).
+
+In StarAI, directed models include Probabilistic Logic Programs (PLPs)
+which imply a causal direction between variables. Undirected models,
+such as Markov Logic Networks (MLNs), specify weighted constraints
+over variables without an inherent direction.
+
+This distinction maps directly to NeSy.
+\begin{enumerate}
+\item \textbf{Directed NeSy:} Systems that exploit backward chaining
+  or forward chaining in a directed graph. Examples include Neural
+  Theorem Provers (NTPs) and DeepProbLog.
+\item \textbf{Undirected NeSy:} Systems that treat logic as a soft
+  constraint or regularization term over a predictive model. Examples
+  include Logic Tensor Networks (LTN) and Semantic Based
+  Regularization (SBR).
+\end{enumerate}
+
+\whiteboard{
+    \textbf{1. Directed Models (Derivational/Proof-Centric)}
+    \begin{itemize}
+        \item \textbf{StarAI: Probabilistic Logic Programs (PLP)}
+        \begin{itemize}
+            \item \textit{Core Concept:} \textbf{Least Herbrand Model}.
+            \begin{itemize}
+                \item In definite clause logic (like Prolog), multiple worlds might satisfy the rules.
+                \item We select the \textit{Least Herbrand Model}: the unique "minimal" set of true facts. A fact is true \textit{only} if it is explicitly stated or logically derived from the rules. Everything else is false (Closed World Assumption).
+                \item \textit{Probabilistic Extension:} We define a distribution over these minimal models based on probabilistic facts.
+            \end{itemize}
+            \item \textit{Example (ProbLog):}
+            $$ 0.5 :: heads(coin). \quad win \leftarrow heads(coin). $$
+            \textit{Model 1:} $\{heads(coin), win\}$ (Prob 0.5). \textit{Model 2:} $\emptyset$ (Prob 0.5).
+            \textit{Note:} A world $\{win\}$ without $\{heads\}$ is impossible because it violates the derivation rule.
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \item \textbf{NeSy: Neural-Symbolic Directed (e.g., DeepProbLog)}
+        \begin{itemize}
+            \item \textit{The MNIST Addition Example:}
+            \item \textbf{1. The Neural (Sub-symbolic):}
+            \textit{Declaration:} We define \texttt{digit/2} as a "Neural Predicate".
+            $$ nn(mnist\_net, Img, Digit) :: digit(Img, Digit). $$
+            \textit{Meaning:} The neural network $mnist\_net$ takes $Img$ as input and outputs a probability distribution over $Digit$ ($0..9$), which becomes the probability of the fact $digit(Img, Digit)$.
+            \item \textbf{2. The Symbolic (Logical):} Pure Prolog rules use the neural predicate.
+            $$ sum(ImgA, ImgB, Z) \leftarrow digit(ImgA, A), digit(ImgB, B), Z \text{ is } A + B. $$
+            \item \textbf{3. The Connection (Interface):}
+            The logic engine sees $digit(ImgA, A)$ as a probabilistic fact.
+            \item \textit{Training Loop (Learning from Facts):}
+            \begin{itemize}
+                \item \textbf{Data:} Ground truth fact is $sum(img_1, img_2, 12)$.
+                \item \textbf{Objective:} Maximize the likelihood of this fact.
+                \item \textbf{Step 1 (Query):} Calculate current probability $P = P(sum(img_1, img_2, 12))$ using current weights.
+                \item \textbf{Step 2 (Loss):} Loss $= -\log(P)$.
+                \item \textbf{Step 3 (Update):} Backpropagate through the logical proof path to update $mnist\_net$.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+
+    \hrulefill
+
+    \textbf{2. Undirected Models (Constraint-Based)}
+    \begin{itemize}
+        \item \textbf{StarAI: Markov Logic Networks (MLN)}
+        \begin{itemize}
+        \item \textit{Core Concept:} \textbf{Weighted Model Counting (WMC)}
+            \begin{itemize}
+                \item An MLN defines a probability $P(World) = \frac{1}{Z} \exp(\sum w_i n_i(World))$.
+                \item $n_i(World)$: Number of {\em true groundings} of
+                  formula $i$ in the world (The formula acts as a
+                  \textit{template}. We replace variables ($X, Y$)
+                  with all constants (Alice, Bob) to create ``ground''
+                  constraints. We count how many of these ground
+                  instances are satisfied.)
+                \item \textbf{The Partition Function ($Z$):} To ensure probabilities sum to 1, we must divide by $Z$, which is the sum of weights over \textbf{all possible worlds} ($2^{\text{atoms}}$).
+                \item Calculating $Z$ is the task of \textit{Weighted Model Counting}. It is \#P-complete (very hard), often solved by compiling the logic into Arithmetic Circuits.
+            \end{itemize}
+            \item \textit{Example:}
+            $$ 1.5 : Smokes(X) \wedge Friend(X, Y) \Rightarrow Smokes(Y) $$
+            A world where friends define smoking habits has a higher "weight" (more probable) than a world where they don't.
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \item \textbf{NeSy: Logic Tensor Networks (LTN) / Semantic Loss}
+          \begin{itemize}
+            \item \textit{Concept:} \textbf{Fuzzy Logic Relaxation}
+            \item Instead of "counting" discrete worlds, we map truth
+              values to continuous real numbers in $[0,1]$ using
+              Neural Networks.
+            \item \textbf{1. The Neural (Grounding):}
+              Predicates are Neural Networks. For an image bounding box $x$:
+              $$ Cat(x) \approx NN_{cat}(x) \in [0, 1] \quad (\text{e.g., } 0.9) $$
+              $$ Animal(x) \approx NN_{animal}(x) \in [0, 1] \quad (\text{e.g., } 0.2) $$
+            \item \textbf{2. The Symbolic (Constraint):}
+              We enforce background knowledge: "All cats are animals."
+              $$ \forall x: Cat(x) \rightarrow Animal(x) $$
+            \item \textbf{3. The Connection (Fuzzy Semantics):}
+            We translate the logical operator ($\rightarrow$) into a
+            differentiable mathematical function (T-Norm).
+            \textit{Example (Reichenbach Implication):} $A \rightarrow B \equiv 1 - A + A \cdot B$.
+            $$ \text{Truth}(Rule) = 1 - 0.9 + (0.9 \cdot 0.2) = 0.1 + 0.18 = 0.28 $$
+            \textit{Result:} The rule is "mostly false" (0.28). This
+            indicates a contradiction between the network's beliefs
+            ($Cat=High$) and the logic ($Animal=Low$).
+          \item \textit{Training Loop:}
+            $$ \text{Total Loss} = \text{Supervised Loss} + \lambda(1 - \text{Truth}(Rule)) $$
+            The gradient minimizes the Logic Loss ($1 - 0.28 = 0.72$),
+            forcing the network to either decrease $Cat(x)$ or
+            increase $Animal(x)$ to satisfy the rule. 
+        \end{itemize}
+    \end{itemize}
+  }
+  
+\section*{Dimension 2: Model-based vs. Proof-based Inference }
+
+\textbf{Script:}
+This dimension contrasts model-theoretic and proof-theoretic
+approaches.
+In a \textbf{model-based} approach, we define a probability
+distribution over possible worlds (interpretations). Inference often
+involves grounding the theory into a graphical model and performing
+SAT solving or weighted model counting.
+
+In a \textbf{proof-based} approach, probabilities or scores are
+derived from the derivation path (the proof) itself. This is standard
+in programming languages like Prolog. NeSy systems like NTPs and
+DeepProbLog are proof-based; they construct differentiable proof trees
+where the output certainty depends on the aggregation of proofs.
+
+\whiteboard{
+    \textbf{2. Inference Mechanism}
+    \begin{itemize}
+        \item \textbf{Model-based:}
+        $$ \text{Logic} \xrightarrow{\text{Grounding}} \text{SAT/Graph
+          Model} \xrightarrow{\text{Solve}} P(World) $$
+        \textit{Examples:} MLN, NeuralLP, LTN.
+        \item \textbf{Proof-based:}
+        $$ \text{Query} \xrightarrow{\text{Backward Chaining}}
+        \text{Proof Tree} \xrightarrow{\text{Score}} P(Query) $$
+        \textit{Examples:} Problog, NTP.
+    \end{itemize}
+}
+
+\section*{Dimension 3: Logic vs. Probability vs. Neural }
+
+\textbf{Script:}
+We must analyze which paradigms are preserved in the integration.
+StarAI typically integrates Logic and Probability. NeSy adds the Neural dimension.
+We observe two dominant integration strategies in NeSy:
+\begin{enumerate}
+    \item \textbf{Logic as Regularization:} The logic is compiled into the weights of the network via a loss function (e.g., Semantic Loss). The final model is neural, and the logic is only present during training.
+    \item \textbf{Differentiable Logic:} Existing logical frameworks are extended with differentiable primitives. For instance, DeepProbLog replaces standard probabilistic facts with neural predicates.
+\end{enumerate}
+
+\whiteboard{
+    \textbf{3. Logic vs. Probability vs. Neural (The Integration Triad)}
+
+    \textbf{Integration Type A: Logic as Regularization (Regularizer)}
+    \begin{itemize}
+        \item \textit{Concept:} Logic is a training-time constraint.
+          \item \textit{Mechanism:} The logical theory $T$ is compiled
+            into a scalar loss function $\mathcal{L}_{logic}$.
+            $$ \text{Total Loss} = \text{Data Loss} + \lambda \cdot \mathcal{L}_{logic}(\text{Predictions}) $$
+          \item \textit{Example (Semantic Loss / SBR):}
+        \begin{itemize}
+            \item \textbf{Task:} Multilabel classification.
+            \item \textbf{Rule:} $\neg (Cat \wedge Dog)$ (Mutually exclusive).
+              \item \textbf{Training:} If the network predicts
+                $P(Cat)=0.9$ and $P(Dog)=0.8$, the regularization term
+                spikes, penalizing the weights.
+              \item \textbf{Inference:} The logic is removed. We just run the Neural Network.
+        \end{itemize}
+        \item \textit{Compositionality:} \textbf{LOST / IMPLICIT}.
+        \begin{itemize}
+            \item The logic is "compiled away" into the floating-point
+              weights of the neural network.
+            \item The network \textit{approximates} the logic but does not \textit{execute} it.
+            \item You cannot easily compose the trained network with new rules without retraining.
+        \end{itemize}
+    \end{itemize}
+
+    \hrulefill
+
+    \textbf{Integration Type B: Logic as Differentiable Component (Architecture)}
+    \begin{itemize}
+        \item \textit{Concept:} Logic is a runtime layer in the computation graph.
+        \item \textit{Mechanism:} The system is a hybrid function $F(x) = \text{Logic}(\text{Neural}(x))$.
+        \item \textit{Example (DeepProbLog / NMLN):}
+        \begin{itemize}
+        \item \textbf{Task:} MNIST Addition.
+        \item \textbf{Components:}
+          1. Neural Component: $Img \to [0..9]$ (Probability Dist).
+          2. Logical Component: $sum(X,Y,Z) \leftarrow digit(X,A), digit(Y,B), Z \text{ is } A+B$.
+        \item \textbf{Execution:} The neural output is fed
+          \textit{into} the logical inference engine (e.g., via
+          Weighted Model Counting or tensorization).
+        \end{itemize}
+      \item \textit{Compositionality:} \textbf{PRESERVED / EXPLICIT}.
+        \begin{itemize}
+        \item The Neural module and Logic module are distinct and composed at runtime.
+        \item The logic is not "in" the weights; it is in the architecture.
+        \item You can swap the logic (e.g., change "sum" to "product")
+          \textit{without} retraining the neural image classifier.
+        \end{itemize}
+      \end{itemize}
+    }
+
+\section*{Dimension 4: Semantics }
+
+\textbf{Script:}
+There are two primary ways to handle the continuous nature of neural/probabilistic values:
+\begin{enumerate}
+\item \textbf{Probabilistic Semantics:} Probability measures are
+  defined over sets of possible worlds. Atoms are Boolean
+  (True/False), but we reason about the probability of their truth.
+\item \textbf{Fuzzy Semantics:} Logic operators are relaxed to
+  real-valued functions on the interval $[0, 1]$ using t-norms. For
+  example, $A \wedge B$ might be computed as $\min(A, B)$ or $A \cdot
+  B$.
+\end{enumerate}
+Fuzzy semantics offer computational efficiency and differentiability
+but fail to preserve original Boolean semantics (e.g., loss of
+transitivity).
+
+\whiteboard{
+  \textbf{4. Semantics}
+  \begin{itemize}
+  \item \textbf{Probabilistic:} $P(Worlds)$. Atoms are $\{0, 1\}$.
+  \item \textbf{Fuzzy (Relaxation):} Atoms are $\in [0, 1]$.
+    \begin{itemize}
+    \item AND: $x \cdot y$ (Product) or $\min(x, y)$ (G{\"o}del).
+    \item OR: $x + y - xy$ or $\max(x, y)$.
+    \item NOT: $1 - x$.
+    \end{itemize}
+  \end{itemize}
+}
+
+\section*{Dimension 5: Structure vs. Parameter Learning} 
+
+\textbf{Script:} In StarAI, we distinguish between \textbf{structure
+  learning} (finding the clauses) and \textbf{parameter learning}
+(finding the weights).  NeSy blurs this distinction. Often, NeSy
+models utilize ``soft'' structure learning by enumerating all possible
+clauses from templates and learning parameters (weights) that
+effectively filter out invalid rules.  Program sketching is another
+approach, where the user provides a partial structure (holes), and the
+neural network learns to fill the blanks.
+
+\whiteboard{
+  \textbf{5. Learning Targets}
+  \begin{itemize}
+  \item \textbf{StarAI:}
+    \begin{itemize}
+    \item Parameters: Weights $w$ for fixed clauses $C$.
+    \item Structure: Searching for $C$ (Combinatorial).
+    \end{itemize}
+  \item \textbf{NeSy:}
+    \begin{itemize}
+    \item Structure via Parameters: Enumerate all templates, learn
+      weights to 0 for invalid rules.
+    \item \textit{Example:} $\alpha \cdot A(X,Y) \leftarrow B(X,Z)
+      \wedge C(Z,Y)$. If $\alpha \to 0$, rule is discarded.
+    \end{itemize}
+  \end{itemize}
+}
+
+\section*{Dimension 6: Symbols vs. Sub-symbols}
+
+\textbf{Script:}
+StarAI operates on \textbf{symbols} (constants, variables). Neural
+networks operate on \textbf{sub-symbols} (vectors, embeddings).
+NeSy combines these.
+\begin{enumerate}
+\item \textbf{Symbolic Entities:} DeepProbLog maintains symbolic
+  constants but uses neural networks to process perceptual data into
+  those symbols.
+\item \textbf{Sub-symbolic Reasoning:} Systems like NTPs and LTNs
+  embed symbols into vector space. Unification becomes a geometric
+  operation (distance/similarity) rather than a symbolic match. This
+  allows for "soft unification."
+\end{enumerate}
+
+\whiteboard{
+    \textbf{6. Representation}
+    \begin{itemize}
+        \item \textbf{Symbolic:} $p(a, b)$. Exact matching.
+        \item \textbf{Sub-symbolic:} $\mathbf{v}_a, \mathbf{v}_b \in \mathbb{R}^d$.
+        \item \textbf{Soft Unification:}
+        $$ \text{score}(p(a, b)) \propto \text{Sim}(\mathbf{v}_a, \mathbf{v}_b) $$
+        Allows reasoning over unseen entities via embedding proximity.
+    \end{itemize}
+}
+
+\section*{Dimension 7: Type of Logic}
+
+\textbf{Script:}
+The final dimension is the expressivity of the logic, following the
+standard hierarchy: Propositional $\to$ Relational (Datalog) $\to$
+First Order Logic $\to$ Logic Programming (with functors).
+Higher expressivity increases learning difficulty.
+\begin{itemize}
+    \item \textbf{Propositional:} Semantic Loss.
+    \item \textbf{Relational/Datalog:} NTPs, DiffLog.
+    \item \textbf{First Order:} LTNs, Markov Logic.
+    \item \textbf{Logic Programming:} DeepProbLog, NLProlog (supports lists/data structures).
+\end{itemize}
+
+\whiteboard{
+    \textbf{7. Logic Expressivity Hierarchy}
+    \textit{(Revised: Handling Recursion \& Structure)}
+
+    \begin{enumerate}
+        \item \textbf{Logic Programming (Proof-Based)}
+        \begin{itemize}
+            \item \textit{System:} DeepProbLog, NLProlog.
+            \item \textit{Recursion:} \textbf{Dynamic / Unbounded}.
+            \item \textit{Mechanism:} Proof-based inference builds the
+              graph \textit{lazily}. Can handle infinite domains or
+              recursive rules (like \texttt{member/2}) without
+              pre-grounding. 
+            \item \textit{Data Structures:} Explicit Symbolic
+              Constructors (Lists, Trees).
+        \end{itemize}
+
+        \item \textbf{First Order Logic / Real Logic (Model-Based)}
+        \begin{itemize}
+            \item \textit{System:} Logic Tensor Networks (LTN).
+            \item \textit{Recursion:} \textbf{Static / Bounded}.
+            \item \textit{Mechanism:} Model-based inference requires
+              \textbf{grounding} the theory to build the loss
+              function. Recursive rules (e.g., transitivity) require
+              iterating over the domain, which usually must be finite
+              or truncated.
+            \item \textit{Functions:}
+            \begin{itemize}
+                \item \textbf{Logic Side:} Mappings $f: \mathbb{R}^n
+                  \to \mathbb{R}^n$ (e.g., `motherOf(x)` moves the
+                  vector `x` to a new point).
+                \item \textbf{NN Side:} Can use Recursive NNs (RNNs)
+                  inside the function.
+                \item \textit{Constraint:} No "Unification" of
+                  symbolic structures; only similarity of vectors.
+            \end{itemize}
+        \end{itemize}
+
+        \item \textbf{Relational Logic (Datalog)}
+        \begin{itemize}
+            \item \textit{System:} NTPs, DiffLog.
+            \item \textit{Constraint:} No Function Symbols (Finite
+              Herbrand Universe).
+        \end{itemize}
+    \end{enumerate}
+}
+\section*{Conclusion and Open Challenges }
+
+\textbf{Script:}
+To conclude, StarAI and NeSy are isomorphic in many respects. NeSy
+currently faces challenges solved in StarAI regarding semantics, yet
+excels in sub-symbolic representation.
+Key open challenges include:
+\begin{enumerate}
+\item \textbf{Semantics:} Clarifying the properties of fuzzy
+  approximations vs. probabilistic reasoning. 
+\item \textbf{Data Efficiency:} Bridging StarAI's efficiency with
+  Neural scalability.
+\item \textbf{Symbolic Representation Learning:} Learning to invent
+  new symbols/predicates, not just parameters.
+\end{enumerate}
+
+\whiteboard{
+    \textbf{Open Challenges:}
+    \begin{itemize}
+    \item \textbf{Semantics:} Fuzzy vs. Boolean preservation.
+    \item \textbf{Scalability:} Inference cost in probabilistic loops.
+    \item \textbf{Data Efficiency:} Neural is data-hungry; Logic is not.
+    \end{itemize}
+  }
+
+\end{document}
